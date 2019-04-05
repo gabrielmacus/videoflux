@@ -53,7 +53,7 @@ namespace videoflux.components.VideoPlayer
 
             #region Model initialization
             videoPlayer = new Video(this.videoView); 
-            videoPlayer.Src = Src;//@"C:\Users\Gabriel\Videos\demo.avi";
+           // videoPlayer.Src = Src;//@"C:\Users\Gabriel\Videos\demo.avi";
             this.DataContext = videoPlayer;
             #endregion
 

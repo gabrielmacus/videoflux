@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:videoflux"
         xmlns:VP="clr-namespace:videoflux.components.VideoPlayer"
         xmlns:VS="clr-namespace:videoflux.components.VideoSnapshots"
+        xmlns:VL="clr-namespace:videoflux.components.VideoPlaylist"
         
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
@@ -31,14 +32,19 @@
 
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
+
+            <RowDefinition Height="120"></RowDefinition>
             <RowDefinition Height="1*"></RowDefinition>
         </Grid.RowDefinitions>
 
-        <VP:VideoPlayer   Grid.Column="0" Grid.ColumnSpan="9" />
 
-        
-        <VS:VideoSnapshots Grid.Column="9" Grid.ColumnSpan="3"/>
 
+        <VL:VideoPlaylist Grid.Column="0" Grid.ColumnSpan="12" Grid.Row="0" ></VL:VideoPlaylist>
+
+        <VP:VideoPlayer   Grid.Column="0" Grid.ColumnSpan="9"  Grid.Row="1"  />
+
+
+        <VS:VideoSnapshots Grid.Column="9" Grid.ColumnSpan="3" Grid.Row="1"  />
 
 
     </Grid>

@@ -1,0 +1,44 @@
+﻿<UserControl x:Class="videoflux.components.VideoPlaylist.VideoPlaylist"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:videoflux.components.VideoPlaylist"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             Loaded="UserControlLoaded"
+             >
+    <Grid>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="1*" />
+        </Grid.RowDefinitions>
+
+        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+
+            <DockPanel HorizontalAlignment="Left">
+                <DockPanel Background="#e0e0e0" Width="120"  >
+                    <TextBlock Text="A"  HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                </DockPanel>
+                
+
+            </DockPanel>
+
+
+
+        </ScrollViewer>
+        
+     
+
+
+
+
+
+    </Grid>
+    
+    
+    
+</UserControl>

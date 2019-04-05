@@ -132,6 +132,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="components\VideoPlaylist\VideoPlaylist.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="components\VideoSnapshots\VideoSnapshots.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -145,6 +149,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="components\VideoPlayer\VideoPlayer.xaml.cs" />
+    <Compile Include="components\VideoPlaylist\VideoPlaylist.xaml.cs">
+      <DependentUpon>VideoPlaylist.xaml</DependentUpon>
+    </Compile>
     <Compile Include="components\VideoSnapshots\VideoSnapshots.xaml.cs">
       <DependentUpon>VideoSnapshots.xaml</DependentUpon>
     </Compile>
