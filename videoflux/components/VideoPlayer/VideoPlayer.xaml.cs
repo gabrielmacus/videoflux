@@ -10,17 +10,59 @@ using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Imaging;
+using videoflux.components.VideoSnapshots;
 using Vlc.DotNet.Forms;
 
 namespace videoflux.components.VideoPlayer
 {
     public partial class VideoPlayer : UserControl
     {
-         
-        protected Video videoPlayer;
+        #region Event handlers  
+        public delegate void SnapshotTakenEventHandler(object sender,RoutedEventArgs e,Snapshot snapshot);
+        public event SnapshotTakenEventHandler SnapshotTaken;
+        #endregion
 
+
+        public Video video;
+
+        public Video Video
+        {
+            get { return video;  }
+            set {
+
+                if(video != null)
+                {
+                    video.MediaPlayer.Stop();
+                }
+
+                video = value;
+                video.VideoView = this.videoView;
+                this.DataContext = video;
+            }
+        }
+
+      
         #region Dependency Properties
+     
+        /*
+        public static readonly DependencyProperty VideoProperty =
+              DependencyProperty.Register("Video",
+                  typeof(Video),
+                  typeof(VideoPlayer),
+                  new PropertyMetadata(null));
 
+        [Bindable(true)]
+        public Video Video
+        {
+            get { return (Video)this.GetValue(VideoProperty); }
+            set {
+
+
+                this.SetValue(VideoProperty, value);
+            }
+        }*/
+        /*
         public static readonly DependencyProperty SrcProperty =
               DependencyProperty.Register("Src",
                   typeof(string),
@@ -32,7 +74,7 @@ namespace videoflux.components.VideoPlayer
         {
             get { return (string)this.GetValue(SrcProperty); }
             set { this.SetValue(SrcProperty, value); }
-        }
+        }*/
 
 
         #endregion
@@ -50,13 +92,15 @@ namespace videoflux.components.VideoPlayer
         {
             var window = Window.GetWindow(this);
             window.KeyDown += onKeyDown;
+            /*
+            this.Video = new Video();
+            this.Video.Src = @"C:\Users\Gabriel\Videos\demo.avi";
+            this.Video.VideoView = videoView;*/
 
-            #region Model initialization
-            videoPlayer = new Video(this.videoView); 
-           // videoPlayer.Src = Src;//@"C:\Users\Gabriel\Videos\demo.avi";
-            this.DataContext = videoPlayer;
-            #endregion
 
+            /*
+            this.Video.VideoView = videoView;
+            this.DataContext = this.Video;*/
 
 
         }
@@ -67,14 +111,14 @@ namespace videoflux.components.VideoPlayer
         public void play(object sender, RoutedEventArgs e)
         {
 
-            videoPlayer.MediaPlayer.Play();
+            this.Video.MediaPlayer.Play();
 
 
         }
 
         public void pause(object sender, RoutedEventArgs e)
         {
-            videoPlayer.MediaPlayer.Pause();
+            this.Video.MediaPlayer.Pause();
             
         }
 
@@ -83,7 +127,7 @@ namespace videoflux.components.VideoPlayer
             switch (e.Key)
             {
                 case Key.Space:
-                    if (videoPlayer.Status == MEDIA_STATUS.PLAYING)
+                    if (this.Video.Status == MEDIA_STATUS.PLAYING)
                     {
                         pause(sender, e);
                     }
@@ -97,7 +141,7 @@ namespace videoflux.components.VideoPlayer
 
                     break;
                 case Key.Right:
-                    if (videoPlayer.Status == MEDIA_STATUS.PAUSED)
+                    if (this.Video.Status == MEDIA_STATUS.PAUSED)
                     {
                         nextFrame(sender, e);
 
@@ -111,7 +155,7 @@ namespace videoflux.components.VideoPlayer
 
                 case Key.Left:
 
-                    if (videoPlayer.Status == MEDIA_STATUS.PAUSED)
+                    if (this.Video.Status == MEDIA_STATUS.PAUSED)
                     {
                         prevFrame(sender, e);
 
@@ -122,38 +166,50 @@ namespace videoflux.components.VideoPlayer
 
                     }
                     break;
+
+                case Key.F1:
+
+                    SnapshotTaken.Invoke(sender, e, this.Video.Snapshot(1));
+      
+                    break;
+                case Key.F2:
+
+                    SnapshotTaken.Invoke(sender, e, this.Video.Snapshot(2));
+
+                    break;
+                case Key.F3:
+                    SnapshotTaken.Invoke(sender, e, this.Video.Snapshot(3));
+
+                    break;
             }
    
         }
 
-        public void screenshot(object sender, RoutedEventArgs e)
-        {
-           
-        }
+      
 
 
         public void rewind(object sender, RoutedEventArgs e)
         {
 
-            videoPlayer.Rewind(5);
+            this.Video.Rewind(5);
 
         }
         public void fastForward(object sender, RoutedEventArgs e)
         {
-            
-            videoPlayer.FastForward(5);
 
+            this.Video.FastForward(5);
         }
+
 
         public void prevFrame(object sender, RoutedEventArgs e)
         {
 
-            videoPlayer.PrevFrame();
+            this.Video.PrevFrame();
         }
         public void nextFrame(object sender, RoutedEventArgs e)
         {
 
-            videoPlayer.NextFrame();
+            this.Video.NextFrame();
         }
 
         public void seekProgressBar(object sender, RoutedEventArgs e)
@@ -162,36 +218,74 @@ namespace videoflux.components.VideoPlayer
         }
     }
 
-    public enum MEDIA_STATUS : int { STOPPED = 1, PAUSED = 2, PLAYING = 3 };
+ 
+
+    public enum MEDIA_STATUS : int { STOPPED = 1, PAUSED = 2, PLAYING = 3,NO_MEDIA=4 };
+
 
     public class Video : INotifyPropertyChanged
     {
         protected LibVLCSharp.WPF.VideoView videoView;
         protected LibVLC libVlc;
+        LibVLCSharp.Shared.MediaPlayer mediaPlayer;
+        protected MEDIA_STATUS status = MEDIA_STATUS.NO_MEDIA;
 
-        protected MEDIA_STATUS status = MEDIA_STATUS.STOPPED;
+        protected string thumbnail;
+        protected string name;
+    
+
+        #region Constructors
+
+        public Video()
+        { 
+            Core.Initialize();
+            libVlc = new LibVLC();
+            this.mediaPlayer = new LibVLCSharp.Shared.MediaPlayer(libVlc); 
+        }
+   
+        #endregion
+        public string ParsedDuration
+        {
+            get {
+
+                TimeSpan ts = TimeSpan.FromMilliseconds(mediaPlayer.Length);
+                return mediaPlayer.Media.Duration.ToString();//string.Format("{0:hh\\:mm\\:ss}", ts); 
+            }
+        }
+
+
+        public Uri ThumbnailUri
+        {
+            get { return new Uri(thumbnail); }
+             
+        }
+
+
+        public string Thumbnail
+        {
+            get { return thumbnail; }
+            set {
+
+                thumbnail = value;
+                NotifyPropertyChanged("Thumbnail");
+                NotifyPropertyChanged("ThumbnailUri");
+
+            }
+        }
 
         protected void init()
         {
-
-            //Directory.GetCurrentDirectory() + "\\Resources\\"
-            //@"C:\libvlc\win-x86"
-            Core.Initialize();
-            libVlc = new LibVLC(); 
-            LibVLCSharp.Shared.MediaPlayer mediaPlayer = new LibVLCSharp.Shared.MediaPlayer(libVlc);
             videoView.MediaPlayer = mediaPlayer;
             videoView.MediaPlayer.TimeChanged += (object sender, MediaPlayerTimeChangedEventArgs e) =>
             {
                 NotifyPropertyChanged("Time");
 
             };
-
             videoView.MediaPlayer.Playing += (object sender,EventArgs e) =>
             {
                 Status = MEDIA_STATUS.PLAYING;
 
             };
-
             videoView.MediaPlayer.Paused += (object sender, EventArgs e) =>
             {
                 Status = MEDIA_STATUS.PAUSED;
@@ -207,37 +301,60 @@ namespace videoflux.components.VideoPlayer
                 NotifyPropertyChanged("Position");
 
             };
+
+
+          
         }
          
         public float Speed
         {
-            get { return videoView.MediaPlayer.Rate; }
+            get { return mediaPlayer.Rate; }
             set {
 
-                videoView.MediaPlayer.SetRate(value);
+                mediaPlayer.SetRate(value);
                 NotifyPropertyChanged("Speed");
             }
         }
 
+        public string Name
+        {
+            get { return this.name; }
+            set
+            {
+                this.name = value;
+                NotifyPropertyChanged("Name");
+
+            }
+        }
+
+
         public float Position
         {
-            get { return videoView.MediaPlayer.Position * 100; }
+            get { return mediaPlayer.Position * 100; }
             set {
-                videoView.MediaPlayer.Position = value / 100;
+                mediaPlayer.Position = value / 100;
                 NotifyPropertyChanged("Position");
 
             }
         }
 
-        public Video(LibVLCSharp.WPF.VideoView videoView)
+
+        public LibVLCSharp.WPF.VideoView VideoView
         {
-            this.videoView = videoView;
-            init();
-            
+            set {
+                this.videoView = value;
+                init();
+                NotifyPropertyChanged("VideoView");
+
+            }
+            get { return videoView; }
         }
+
+
+
         public LibVLCSharp.Shared.MediaPlayer MediaPlayer
         {
-            get { return videoView.MediaPlayer; }
+            get { return mediaPlayer; }
          
         }
 
@@ -253,54 +370,84 @@ namespace videoflux.components.VideoPlayer
         }
         public string Src
         {
-            get { return (videoView.MediaPlayer.Media != null) ? videoView.MediaPlayer.Media.Mrl : null; }
+            get { return (mediaPlayer.Media != null) ? mediaPlayer.Media.Mrl : null; }
             set {
-                
-                this.videoView.MediaPlayer.Media = new Media(libVlc, value,FromType.FromPath);
-                NotifyPropertyChanged("Src");
+                mediaPlayer.Stop();
+                mediaPlayer.Media = new Media(libVlc, value,FromType.FromPath);
+
+                 
+
+                Status = MEDIA_STATUS.STOPPED;
+                NotifyPropertyChanged("Src"); 
+                generateThumbnail();
 
             }
         }
 
+        protected void generateThumbnail()
+        {
+
+            //Updates thumbail if exists 
+            var ffMpeg = new NReco.VideoConverter.FFMpegConverter();
+            FileInfo file = new FileInfo(new Uri(Src).LocalPath);
+            String thumbailPath = file.DirectoryName + "\\thumb_" + file.Name + ".jpg";
+            File.Delete(thumbailPath);
+            ffMpeg.GetVideoThumbnail(file.FullName, thumbailPath);
+
+            File.SetAttributes(thumbailPath, FileAttributes.Hidden);
+            Thumbnail = thumbailPath;
+            ffMpeg.Abort();
+        }
+
         public long Time
         {
-            get { return videoView.MediaPlayer.Time; }
+            get { return mediaPlayer.Time; }
             set
             { 
-                videoView.MediaPlayer.Time = value;
+                mediaPlayer.Time = value;
                 NotifyPropertyChanged("Time");
             }
         }
        
         public void FastForward(int seconds)
         { 
-            videoView.MediaPlayer.Time = videoView.MediaPlayer.Time +(seconds * 1000);
+            mediaPlayer.Time = mediaPlayer.Time +(seconds * 1000);
    
 
         }
 
         public void Rewind(int seconds)
         { 
-            videoView.MediaPlayer.Time = videoView.MediaPlayer.Time - (seconds * 1000);
+            mediaPlayer.Time = mediaPlayer.Time - (seconds * 1000);
  
         }
 
         public void NextFrame()
         {
-            
-            videoView.MediaPlayer.Time = videoView.MediaPlayer.Time + 100;
+
+            mediaPlayer.Time = mediaPlayer.Time + 500;
 
         }
         public void PrevFrame()
         {
-            videoView.MediaPlayer.Time = videoView.MediaPlayer.Time - 100;
+            mediaPlayer.Time = mediaPlayer.Time - 500;
 
         }
 
-        public void Screenshot()
-        {  
+        public Snapshot Snapshot(int number)
+        {
+            FileInfo fileInfo = new FileInfo(new Uri(this.Src).LocalPath);
+            string dir = fileInfo.DirectoryName + "/capturas";
+            Directory.CreateDirectory(dir);
+            string path = dir + "/tmp-F" + number + ".png";
+            mediaPlayer.TakeSnapshot(0,path,0,0);
 
-            //videoView.MediaPlayer.TakeSnapshot(0,"",0,0);
+            Snapshot snapshot = new Snapshot();
+            snapshot.Src = path;
+            snapshot.Number = number;
+
+            return snapshot;
+        
         }
 
         protected void NotifyPropertyChanged(string propertyName)

@@ -6,36 +6,110 @@
              xmlns:local="clr-namespace:videoflux.components.VideoPlaylist"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
+
              Loaded="UserControlLoaded"
              >
+    <UserControl.Resources>
+
+        <DataTemplate x:Key="VideoTemplate">
+
+            <Button Click="selectVideo"  Tag="{Binding}"  Focusable="False" Cursor="Hand" BorderThickness="0 0 1 0" BorderBrush="#bdbdbd" Width="120" Padding="10"   >
+                <Grid>
+                    
+                    <fa:ImageAwesome Icon="Spinner" Foreground="#424242" Spin="True" Height="23" >
+                        <fa:ImageAwesome.Style>
+                            <Style TargetType="fa:ImageAwesome">
+                                
+                            </Style>
+                        </fa:ImageAwesome.Style>
+                    </fa:ImageAwesome>
+ 
+                    <Image  Source="{Binding Thumbnail}"></Image> 
+<!-- 
+                    <Label Background="#212121" Foreground="White"   FontSize="11" Content="{Binding ParsedDuration}" Padding="3"  HorizontalAlignment="Left" VerticalAlignment="Bottom"></Label>
+-->
+                </Grid>
+               
+            </Button>
+        </DataTemplate>
+
+
+    </UserControl.Resources>
+
+
     <Grid>
 
         <Grid.ColumnDefinitions>
+
+            <ColumnDefinition Width="100" />
             <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
 
-        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
 
-            <DockPanel HorizontalAlignment="Left">
-                <DockPanel Background="#e0e0e0" Width="120"  >
-                    <TextBlock Text="A"  HorizontalAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                </DockPanel>
-                
+        <Border Grid.Column="0" BorderThickness="0 0 1 0" BorderBrush="#bdbdbd"    >
 
-            </DockPanel>
+            <Button BorderThickness="0" Cursor="Hand" Focusable="False" Background="#eeeeee " Click="loadPlaylist">
+                <Path Width="34.9999"     Stretch="Uniform" Fill="#f9a825 " Data="F1 M 21,30.0001L 55.9999,30.0001L 55.9999,50L 21,50L 21,30.0001 Z M 52,28L 37,28C 38,25 39.4999,24.0001 39.4999,24.0001L 50.75,24C 51.3023,24 52,24.6977 52,25.25L 52,28 Z "/>
+            </Button>
+
+        </Border>
+ 
+   
+
+        <ScrollViewer Grid.Column="1" Background="#e0e0e0"  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+
+
+            <ScrollViewer.Style>
+                <Style TargetType="ScrollViewer">
+
+                    <Style.Triggers >
+                        <DataTrigger Binding="{Binding HasVideos}" Value="False">
+                            <Setter Property="Visibility" Value="Hidden"></Setter>
+                        </DataTrigger>
+
+                    </Style.Triggers>
+                </Style>
+            </ScrollViewer.Style>
+
+            <ItemsControl  ItemsSource="{Binding Videos}" ItemTemplate="{StaticResource VideoTemplate}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <DockPanel HorizontalAlignment="Left" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel> 
+            </ItemsControl>
+            
+
 
 
 
         </ScrollViewer>
-        
-     
+
+
+        <ScrollViewer Grid.Column="1" Background="#e0e0e0"  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+
+
+            <ScrollViewer.Style>
+                <Style TargetType="ScrollViewer"> 
+
+                    <Style.Triggers >
+                        <DataTrigger Binding="{Binding HasVideos}" Value="True">
+                            <Setter Property="Visibility" Value="Hidden"></Setter>
+                        </DataTrigger>
+
+                    </Style.Triggers>
+                </Style>
+            </ScrollViewer.Style>
+
+            <TextBlock FontWeight="Bold" FontSize="18" Text="Seleccione una carpeta..." VerticalAlignment="Center" HorizontalAlignment="Center"></TextBlock>
 
 
 
-
+        </ScrollViewer>
 
     </Grid>
     
