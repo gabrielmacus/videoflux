@@ -1,21 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel; 
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Collections.ObjectModel; 
-using Swordfish.NET.Collections;
+using System.Windows.Controls; 
+using System.Windows.Media.Imaging; 
+using System.Collections.ObjectModel;  
 using System.Diagnostics;
+using System.IO;
 
 namespace videoflux.components.VideoSnapshots
 {
@@ -56,26 +47,32 @@ namespace videoflux.components.VideoSnapshots
         }
 
 
+        private void saveSnapshotsGroup(object sender,RoutedEventArgs e)
+        {
+            SnapshotsGroup.Save();
+        }
     }
 
 
     public class SnapshotsGroup : INotifyPropertyChanged
     {
         string licensePlate;
-        ObservableDictionary<int,Snapshot> snapshots = new ObservableDictionary<int,Snapshot>();
+        Dictionary<int,Snapshot> snapshots = new Dictionary<int,Snapshot>();
          
 
       
-        public ObservableDictionary<int, Snapshot> Snapshots
+        public Dictionary<int, Snapshot> Snapshots
         {
             get { return snapshots; }
             set {
                 snapshots = value;
+
                 NotifyPropertyChanged("Snapshots"); 
                 NotifyPropertyChanged("SnapshotsCollection");
                 NotifyPropertyChanged("SnapshotsPlaceholdersCollection");
             }
         }
+
 
         public ObservableCollection<Snapshot> SnapshotsCollection
         {
@@ -99,6 +96,21 @@ namespace videoflux.components.VideoSnapshots
             }
         }
 
+        public void Save()
+        {
+            foreach(KeyValuePair<int,Snapshot> entry in Snapshots)
+            {
+                var finfo = new FileInfo(entry.Value.Src);
+                var dest = finfo.Directory.FullName + "/dest.png";
+
+                if (File.Exists(dest))
+                {
+                    File.Delete(dest);
+                }
+
+                File.Copy(entry.Value.Src, dest);
+            }
+        }
 
         public bool  HasSnapshots
         {
@@ -143,8 +155,28 @@ namespace videoflux.components.VideoSnapshots
 
     public class Snapshot : INotifyPropertyChanged
     {
-        string src;
-        int number;
+        protected string src;
+        protected int number;
+        protected long time;
+        protected int deviceNumber;
+
+
+        public Snapshot(string src,int number, long time, int deviceNumber)
+        {
+            this.src = src;
+            this.number = number;
+            this.time = time;
+            this.deviceNumber = deviceNumber;
+        }
+        public int DeviceNumber
+        {
+            get { return deviceNumber;  }
+            set
+            {
+                deviceNumber = value;
+                NotifyPropertyChanged("DeviceNumber");
+            }
+        }
 
         public int Number
         {
@@ -155,7 +187,32 @@ namespace videoflux.components.VideoSnapshots
                 NotifyPropertyChanged("Number");
             }
         }
+        public long Time
+        {
+            get { return time;  }
+            set
+            {
+                time = value;
+                NotifyPropertyChanged("Time");
+            }
+        }
 
+        public BitmapImage SrcBitmap
+        {
+            get {
+
+                 
+
+                BitmapImage image = new BitmapImage();
+                image.BeginInit();
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                image.CreateOptions = BitmapCreateOptions.IgnoreImageCache;//IMPORTANT!
+                image.UriSource = new Uri(Src);
+                image.EndInit();
+
+                return image;
+            }
+        }
         public string Src
         {
             get { return src; }
@@ -163,6 +220,7 @@ namespace videoflux.components.VideoSnapshots
             {
                 src = value;
                 NotifyPropertyChanged("Src");
+                NotifyPropertyChanged("SrcBitmap");
             }
         }
 

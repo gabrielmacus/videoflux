@@ -42,12 +42,12 @@
 
 
 
-        <VL:VideoPlaylist LoadedPlaylist="onLoadedPlaylist" SelectedVideo="onSelectedVideo" Grid.Column="0" Grid.ColumnSpan="9" Grid.Row="0" />
+        <VL:VideoPlaylist  LoadedPlaylist="onLoadedPlaylist" SelectedVideo="onSelectedVideo" Grid.Column="0" Grid.ColumnSpan="9" Grid.Row="0" />
 
-        <VP:VideoPlayer  SnapshotTaken="onSnapshotTaken"  x:Name="vplayer"  Grid.Column="0" Grid.ColumnSpan="9"  Grid.Row="1"  />
+        <VP:VideoPlayer VideoInfo="vinfo.VInfo"  SnapshotTaken="onSnapshotTaken"  x:Name="vplayer"  Grid.Column="0" Grid.ColumnSpan="9"  Grid.Row="1"  />
 
 
-        <VI:VideoInfo   x:Name="vinfo" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="9" />
+        <VI:VideoInfo    x:Name="vinfo" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="9" />
 
         <VS:VideoSnapshots x:Name="vsnapshots" Grid.Column="9" Grid.ColumnSpan="3" Grid.Row="0" Grid.RowSpan="3"  />
 

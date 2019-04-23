@@ -4,9 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:videoflux.components.VideoPlayer" 
-             xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
-              xmlns:wpf="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF"
-
+             xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms" 
+             xmlns:vlc="clr-namespace:Vlc.DotNet.Forms;assembly=Vlc.DotNet.Forms"
              mc:Ignorable="d" Background="#FF212121" d:DesignHeight="355" d:DesignWidth="596"
              Loaded="UserControlLoaded"
 
@@ -14,29 +13,25 @@
 
     <UserControl.Resources>
 
-
-        <Style x:Key="LoadButton" TargetType="Button">
-            <Setter Property="Cursor" Value="Hand"></Setter>
-
-            <Setter Property="Background" Value="Transparent"/>
+ 
+        
+        <Style x:Key="ControlButton" TargetType="Button">
+            <Setter Property="OverridesDefaultStyle" Value="True" />
+            <Setter Property="Cursor" Value="Hand" />
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate TargetType="{x:Type Button}">
-                        <Border Background="{TemplateBinding Background}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <ControlTemplate TargetType="Button">
+                        <Border Name="border" BorderThickness="0" BorderBrush="Black" Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Opacity" Value="0.8" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#424242"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-        
-        <Style x:Key="ControlButton" TargetType="Button">
-
             <Setter Property="Cursor" Value="Hand"></Setter>
             <Setter Property="BorderThickness" Value="0"></Setter>
             <Setter Property="Background" Value="#ecf0f1"></Setter>
@@ -93,7 +88,9 @@
 
 
             <Border Grid.Row="0" Grid.Column="0">
-                <wpf:VideoView  BorderThickness="0"  Grid.Row="0" Grid.Column="0"    x:Name="videoView"></wpf:VideoView>
+                <WindowsFormsHost Name="videoVlc">
+                </WindowsFormsHost>
+
                 <Border.Style>
                     <Style TargetType="Border">
 
@@ -136,9 +133,11 @@
 
                 <Border.Style>
                     <Style TargetType="Border">
-                        <Setter Property="Visibility" Value="Hidden"></Setter>
-
+                        <Style.Setters>
+                            <Setter Property="Visibility" Value="Hidden"></Setter>
+                        </Style.Setters>
                         <Style.Triggers >
+
                             <DataTrigger Binding="{Binding Status}" Value="{x:Static local:MEDIA_STATUS.NO_MEDIA}">
                                 <Setter Property="Visibility" Value="Visible"></Setter>
                             </DataTrigger>
@@ -147,9 +146,11 @@
                             </DataTrigger>
 
                         </Style.Triggers>
+
+
+
                     </Style>
                 </Border.Style>
-
             </Border>
  
 
@@ -171,14 +172,13 @@
         <Button Focusable="False"     Grid.Row="1" Grid.Column="4" Grid.ColumnSpan="4" Click="pause"  Name="pauseBt"  VerticalContentAlignment="Center"  HorizontalContentAlignment="Center">
             <Button.Style>
                 <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
- 
+                    <Setter Property="Visibility" Value="Hidden"></Setter>
                     <Style.Triggers>
+                    
                         <DataTrigger Binding="{Binding Status}" Value="{x:Static local:MEDIA_STATUS.PLAYING}">
                             <Setter Property="Visibility" Value="Visible"></Setter>
                         </DataTrigger>
-                        <DataTrigger Binding="{Binding Status}" Value="{x:Static local:MEDIA_STATUS.PAUSED}">
-                            <Setter Property="Visibility" Value="Hidden"></Setter>
-                        </DataTrigger>
+                      
 
                     </Style.Triggers>
                 </Style>
