@@ -1,0 +1,80 @@
+﻿<UserControl x:Class="videoflux.components.VideoSnapshotCropper.VideoSnapshotCropper"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:videoflux.components.VideoSnapshotCropper"
+             mc:Ignorable="d" 
+             
+             Loaded="UserControl_Loaded"
+             d:DesignHeight="450" d:DesignWidth="800">
+
+
+    <AdornerDecorator  >
+
+        <AdornerDecorator.Style>
+            <Style TargetType="AdornerDecorator">
+                <Style.Setters>
+                    <Setter Property="Visibility" Value="Visible"></Setter>
+                </Style.Setters>
+                <Style.Triggers >
+                    <DataTrigger Binding="{Binding Snapshot}" Value="{x:Null}">
+                        <Setter Property="Visibility" Value="Hidden"></Setter>
+                    </DataTrigger>
+                </Style.Triggers>
+
+
+
+            </Style>
+        </AdornerDecorator.Style>
+        
+        <Grid  >
+            <Grid.Background>
+                <SolidColorBrush Color="Black" Opacity="0.8"/>
+            </Grid.Background>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="20"></ColumnDefinition>
+                <ColumnDefinition Width="9*"></ColumnDefinition>
+                <ColumnDefinition Width="3*"></ColumnDefinition>
+
+                <ColumnDefinition Width="20"></ColumnDefinition>
+
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="1*"></RowDefinition>
+                <RowDefinition Height="20"></RowDefinition>
+
+            </Grid.RowDefinitions>
+
+            <Border Grid.Column="0" Grid.Row="0"></Border>
+
+            <Grid Cursor="SizeAll"  Grid.Row="1" Grid.Column="1" Name="border" MouseUp="Canvas_MouseUp" MouseMove="Canvas_MouseMove"   ClipToBounds="True">
+
+                <Grid.Background>
+                    <ImageBrush ImageSource="/Resources/images/pattern.png" Stretch="UniformToFill"/>
+                </Grid.Background>
+
+                <Image Name="image" Opacity="1" Source="{Binding Snapshot.SrcBitmap}" />
+                <Canvas  Name="canvas" ></Canvas>
+            </Grid>
+
+            <Border Background="#00897b" Grid.Column="2" Grid.Row="1" Padding="20">
+                <StackPanel  >
+                    <TextBlock FontSize="18" Foreground="White" FontWeight="Medium" Margin="0 0 0 10">Recorte de imagen</TextBlock>
+                    <Image Source="{Binding Snapshot.SrcBitmap}"></Image>
+                </StackPanel>
+            </Border>
+      
+
+            <Border  Grid.Column="3" Grid.Row="2"></Border>
+        
+            
+        
+        </Grid> 
+        
+        
+    </AdornerDecorator> 
+
+
+</UserControl>

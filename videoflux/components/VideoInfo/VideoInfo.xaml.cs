@@ -23,14 +23,14 @@ namespace videoflux.components.VideoInfo
     /// </summary>
     public partial class VideoInfo : UserControl
     {
-        Info vInfo;
+        Info info;
 
-        public Info VInfo
+        public Info Info
         {
-            get { return vInfo; }
+            get { return info; }
             set {
-                vInfo = value;
-                this.DataContext = vInfo;
+                info = value;
+                this.DataContext = info;
             }
         }
 

@@ -16,6 +16,7 @@ using videoflux.components.VideoInfo;
 using videoflux.components.VideoPlayer;
 using videoflux.components.VideoPlaylist;
 using videoflux.components.VideoSnapshots;
+using videoflux.components.VideoSnapshotCropper;
 
 namespace videoflux.pages
 {
@@ -55,23 +56,35 @@ namespace videoflux.pages
 
          public void onSelectedVideo(object sender, RoutedEventArgs e)
         { 
-            this.vplayer.Video = (Video)e.Source; 
+            this.vplayer.Video = (Video)e.Source;
+
+            this.vsnapshots.SnapshotsGroup = new SnapshotsGroup(this.vinfo.Info.DeviceNumber, this.vplayer.Video);
         }
+
+        
+
         public void onSnapshotTaken(object sender,RoutedEventArgs e,Snapshot snapshot)
         {
-            var sg = vsnapshots.SnapshotsGroup.Snapshots;
-         
+            var sg = this.vsnapshots.SnapshotsGroup.Snapshots;
             sg[snapshot.Number] = snapshot;
-            vsnapshots.SnapshotsGroup.Snapshots = sg;
+            this.vsnapshots.SnapshotsGroup.Snapshots = sg;
+        
+            if(snapshot.Number == 1)
+            {
+                this.vplayer.Visibility = Visibility.Hidden;
+                
+                this.vplayer.Video.Pause();
+                Crop Crop = new Crop(snapshot);
+                this.vcropper.Crop = Crop;
+            }
 
         }
+       
         public void onLoadedPlaylist(object sender, RoutedEventArgs e)
         {
             Info info = new Info();
             info.VideosDir = (string)e.Source;
-            this.vinfo.VInfo = info;
-
-
+            this.vinfo.Info = info; 
 
         }
     }

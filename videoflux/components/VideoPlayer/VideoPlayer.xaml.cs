@@ -43,41 +43,41 @@ namespace videoflux.components.VideoPlayer
 
 
         #region Dependency Properties
-  
-        public static readonly DependencyProperty VideoInfoProperty =
-                 DependencyProperty.Register("VideoInfo",
-                     typeof(Info),
+        /*
+           public static readonly DependencyProperty VideoInfoProperty =
+                    DependencyProperty.Register("VideoInfo",
+                        typeof(Info),
+                        typeof(VideoPlayer),
+                        new PropertyMetadata(null));
+
+           [Bindable(true)]
+           public Info VideoInfo
+           {
+               get { return (Info)this.GetValue(VideoInfoProperty); }
+               set
+               {
+
+
+                   this.SetValue(VideoInfoProperty, value);
+               }
+           } 
+
+           public static readonly DependencyProperty VideoProperty =
+                 DependencyProperty.Register("Video",
+                     typeof(Video),
                      typeof(VideoPlayer),
                      new PropertyMetadata(null));
 
-        [Bindable(true)]
-        public Info VideoInfo
-        {
-            get { return (Info)this.GetValue(VideoInfoProperty); }
-            set
-            {
+           [Bindable(true)]
+           public Video Video
+           {
+               get { return (Video)this.GetValue(VideoProperty); }
+               set {
 
 
-                this.SetValue(VideoInfoProperty, value);
-            }
-        } 
-        /*
-        public static readonly DependencyProperty VideoProperty =
-              DependencyProperty.Register("Video",
-                  typeof(Video),
-                  typeof(VideoPlayer),
-                  new PropertyMetadata(null));
-
-        [Bindable(true)]
-        public Video Video
-        {
-            get { return (Video)this.GetValue(VideoProperty); }
-            set {
-
-
-                this.SetValue(VideoProperty, value);
-            }
-        }*/
+                   this.SetValue(VideoProperty, value);
+               }
+           }*/
         /*
         public static readonly DependencyProperty SrcProperty =
               DependencyProperty.Register("Src",
@@ -117,24 +117,10 @@ namespace videoflux.components.VideoPlayer
 
             var window = Window.GetWindow(this);
             window.KeyUp += onKeyDown;
-
-
-            /*
-            this.Video = new Video();
-            this.Video.Src = @"C:\Users\Gabriel\Videos\demo.avi";
-            this.Video.VideoView = videoView;*/
-
-
-            /*
-            this.Video.VideoView = videoView;
-            this.DataContext = this.Video;*/
-
-
+            
         }
 
-
-
-
+        
         public void play(object sender, RoutedEventArgs e)
         {
 
@@ -431,6 +417,7 @@ namespace videoflux.components.VideoPlayer
                 }
 
                 control.TakeSnapshot(path, 0, 0);
+                File.SetAttributes(path, FileAttributes.Hidden);
 
                 Snapshot snapshot = new Snapshot(path,number,control.Time); 
                 return snapshot;

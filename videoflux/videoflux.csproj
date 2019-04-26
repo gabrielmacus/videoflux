@@ -143,6 +143,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="components\VideoSnapshotCropper\VideoSnapshotCropper.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="components\VideoSnapshots\VideoSnapshots.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -161,6 +165,9 @@
     <Compile Include="components\VideoPlayer\VideoPlayer.xaml.cs" />
     <Compile Include="components\VideoPlaylist\VideoPlaylist.xaml.cs">
       <DependentUpon>VideoPlaylist.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="components\VideoSnapshotCropper\VideoSnapshotCropper.xaml.cs">
+      <DependentUpon>VideoSnapshotCropper.xaml</DependentUpon>
     </Compile>
     <Compile Include="components\VideoSnapshots\VideoSnapshots.xaml.cs">
       <DependentUpon>VideoSnapshots.xaml</DependentUpon>
@@ -216,9 +223,6 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Resources\" />
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1</ProductName>
@@ -227,6 +231,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="License-LGPL.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\images\pattern.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\VideoLAN.LibVLC.Windows.3.0.6\build\VideoLAN.LibVLC.Windows.targets" Condition="Exists('..\packages\VideoLAN.LibVLC.Windows.3.0.6\build\VideoLAN.LibVLC.Windows.targets')" />
