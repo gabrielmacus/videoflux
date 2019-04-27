@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:videoflux.components.VideoSnapshots"
              mc:Ignorable="d" 
+             xmlns:services="clr-namespace:videoflux.services"
              Loaded="UserControl_Loaded"
              d:DesignHeight="450" d:DesignWidth="290">
 
@@ -166,11 +167,11 @@
                             <ColumnDefinition Width="1*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
-                        <TextBox Grid.Column="0"  Text="{Binding H,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" ></TextBox>
-                        <TextBlock  FontWeight="Bold" FontSize="12"  Text=":" Grid.Column="1" TextAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                        <TextBox  Grid.Column="2"  Text="{Binding M,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"  ></TextBox>
+                        <TextBox  services:SelectAllFocusBehavior.Enable="True" Grid.Column="0"  Text="{Binding H,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" ></TextBox>
+                        <TextBlock   FontWeight="Bold" FontSize="12"  Text=":" Grid.Column="1" TextAlignment="Center" VerticalAlignment="Center"></TextBlock>
+                        <TextBox  services:SelectAllFocusBehavior.Enable="True" Grid.Column="2"  Text="{Binding M,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"  ></TextBox>
                         <TextBlock  FontWeight="Bold" FontSize="12"  Text=":" Grid.Column="3" TextAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                        <TextBox  Grid.Column="4"  Text="{Binding S,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"  ></TextBox>
+                        <TextBox  services:SelectAllFocusBehavior.Enable="True"    Grid.Column="4"  Text="{Binding S,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"  ></TextBox>
 
                     </Grid>
 

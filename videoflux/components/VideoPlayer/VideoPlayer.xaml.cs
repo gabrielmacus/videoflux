@@ -360,7 +360,7 @@ namespace videoflux.components.VideoPlayer
 
         public void Pause()
         {
-            if (control != null && control.VlcMediaPlayer.GetMedia() != null)
+            if (control != null )
             {
                 control.Pause();
                 Status = MEDIA_STATUS.PAUSED;

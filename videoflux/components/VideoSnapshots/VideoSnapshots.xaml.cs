@@ -10,6 +10,7 @@ using System.IO;
 using NReco.VideoConverter;
 using System.Linq;
 using videoflux.components.VideoPlayer;
+using System.Windows.Controls.Primitives;
 
 namespace videoflux.components.VideoSnapshots
 {
@@ -62,6 +63,8 @@ namespace videoflux.components.VideoSnapshots
         {
             SnapshotsGroup.Save();
         }
+
+         
     }
 
 

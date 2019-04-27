@@ -71,21 +71,39 @@ namespace videoflux.pages
         
             if(snapshot.Number == 1)
             {
-                this.vplayer.Visibility = Visibility.Hidden;
-                
                 this.vplayer.Video.Pause();
+                this.vplayer.Visibility = Visibility.Hidden; 
+    
                 Crop Crop = new Crop(snapshot);
                 this.vcropper.Crop = Crop;
             }
 
         }
        
+        public void onSnapshotCropped(object sender, RoutedEventArgs e, Snapshot snapshot)
+        {
+            this.vcropper.Crop = null;
+            this.vsnapshots.SnapshotsGroup.Snapshots[1] = snapshot;
+            this.vplayer.Visibility = Visibility.Visible;
+       
+            GC.Collect();
+        }
+
         public void onLoadedPlaylist(object sender, RoutedEventArgs e)
         {
             Info info = new Info();
             info.VideosDir = (string)e.Source;
             this.vinfo.Info = info; 
 
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            
+            /*
+            Snapshot snapshot = new Snapshot(@"C:\Users\Gabriel\Pictures\Demo\highway-cars-wallpaper-1.jpg", 1,10000);
+            Crop Crop = new Crop(snapshot);
+            this.vcropper.Crop = Crop;*/
         }
     }
 

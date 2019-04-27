@@ -14,7 +14,7 @@
 
         <DataTemplate x:Key="VideoTemplate">
 
-            <Button Click="selectVideo"  Tag="{Binding}"  Focusable="False" Cursor="Hand" BorderThickness="0 0 1 0" BorderBrush="#bdbdbd" Width="120" Padding="10"   >
+            <Button Click="selectVideo"   Tag="{Binding}"  Focusable="False" Cursor="Hand" BorderThickness="0 0 1 0" BorderBrush="#bdbdbd" Width="120" Padding="10"   >
                 <Grid>
                     
                     <fa:ImageAwesome Icon="Spinner" Foreground="#424242" Spin="True" Height="23" >
@@ -24,8 +24,11 @@
                             </Style>
                         </fa:ImageAwesome.Style>
                     </fa:ImageAwesome>
- 
-                    <Image  Source="{Binding Thumbnail}"></Image> 
+
+                    <Border Padding="10">
+
+                        <Image  Source="{Binding Thumbnail}"></Image>
+                    </Border>
 <!-- 
                     <Label Background="#212121" Foreground="White"   FontSize="11" Content="{Binding ParsedDuration}" Padding="3"  HorizontalAlignment="Left" VerticalAlignment="Bottom"></Label>
 -->

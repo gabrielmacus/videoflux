@@ -4,6 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:videoflux.components.VideoSnapshotCropper"
+             xmlns:fa ="http://schemas.fontawesome.io/icons/"
              mc:Ignorable="d" 
              
              Loaded="UserControl_Loaded"
@@ -33,17 +34,17 @@
                 <SolidColorBrush Color="Black" Opacity="0.8"/>
             </Grid.Background>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="20"></ColumnDefinition>
+                <ColumnDefinition Width="40"></ColumnDefinition>
                 <ColumnDefinition Width="9*"></ColumnDefinition>
                 <ColumnDefinition Width="3*"></ColumnDefinition>
 
-                <ColumnDefinition Width="20"></ColumnDefinition>
+                <ColumnDefinition Width="40"></ColumnDefinition>
 
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
-                <RowDefinition Height="20"></RowDefinition> 
+                <RowDefinition Height="40"></RowDefinition> 
                 <RowDefinition Height="1*"></RowDefinition>
-                <RowDefinition Height="20"></RowDefinition>
+                <RowDefinition Height="40"></RowDefinition>
 
             </Grid.RowDefinitions>
 
@@ -55,14 +56,40 @@
                     <ImageBrush ImageSource="/Resources/images/pattern.png" Stretch="UniformToFill"/>
                 </Grid.Background>
 
-                <Image Name="image" Opacity="1" Source="{Binding Snapshot.SrcBitmap}" />
+                <Image Name="image" Stretch="Uniform" Opacity="1" Source="{Binding Snapshot.SrcBitmap}" />
                 <Canvas  Name="canvas" ></Canvas>
             </Grid>
 
-            <Border Background="#00897b" Grid.Column="2" Grid.Row="1" Padding="20">
+            <Border Background="#00796b" Grid.Column="2" Grid.Row="1" >
                 <StackPanel  >
-                    <TextBlock FontSize="18" Foreground="White" FontWeight="Medium" Margin="0 0 0 10">Recorte de imagen</TextBlock>
-                    <Image Source="{Binding Snapshot.SrcBitmap}"></Image>
+                    <Border Padding="20 15 20 15" Background="#00695c">
+                        <WrapPanel >
+                            <TextBlock FontSize="18" Foreground="White" FontWeight="Medium" Margin="0 0 0 0">
+                        Vista previa
+                            </TextBlock>
+                            <fa:ImageAwesome Margin="5 0 0 -4" Icon="Crop" Width="14"  Foreground="White"  VerticalAlignment="Center"/>
+                        </WrapPanel>
+                    </Border>
+                 
+
+                    <Border Padding="20">
+                        <StackPanel  >
+                            <Image Source="{Binding Src}"></Image>
+
+                            <Button BorderThickness="0" Background="#2e7d32" Foreground="White"  Name="saveCrop" Click="SaveCrop_Click">
+                                <Border Padding="10">
+                                    <WrapPanel>
+                                        <TextBlock FontWeight="Bold">Guardar recorte</TextBlock>
+                                        <fa:ImageAwesome Margin="7 0 0 -2" Icon="Check" Width="12"  Foreground="White"  VerticalAlignment="Center"/>
+
+                                    </WrapPanel>
+                                 
+                                </Border>
+                            </Button>
+                        </StackPanel>
+                    </Border>
+        
+                    
                 </StackPanel>
             </Border>
       
