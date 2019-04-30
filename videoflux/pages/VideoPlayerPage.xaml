@@ -8,10 +8,11 @@
       xmlns:VS="clr-namespace:videoflux.components.VideoSnapshots"
       xmlns:VL="clr-namespace:videoflux.components.VideoPlaylist"
       xmlns:VSC="clr-namespace:videoflux.components.VideoSnapshotCropper"
-      xmlns:VI="clr-namespace:videoflux.components.VideoInfo"
+      xmlns:VI="clr-namespace:videoflux.components.DeviceInfo"
       mc:Ignorable="d" 
       Loaded="Page_Loaded"
       d:DesignHeight="450" d:DesignWidth="800"
+      KeyDown="Page_KeyDown" 
       Title="VideoPlayerPage">
 
     <Grid    >
@@ -50,9 +51,9 @@
         </VP:VideoPlayer>
 
 
-        <VI:VideoInfo    x:Name="vinfo" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="9" ></VI:VideoInfo>
+        <VI:DeviceInfo    x:Name="vinfo" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="9" ></VI:DeviceInfo>
 
-        <VS:VideoSnapshots  x:Name="vsnapshots" Grid.Column="9" Grid.ColumnSpan="3" Grid.Row="0" Grid.RowSpan="3"  />
+        <VS:VideoSnapshots SnapshotsGroupSaved="onSnapshotsGroupSaved"  x:Name="vsnapshots" Grid.Column="9" Grid.ColumnSpan="3" Grid.Row="0" Grid.RowSpan="3"  />
 
 
         <VSC:VideoSnapshotCropper SnapshotCropped="onSnapshotCropped" Grid.Column="0" Grid.ColumnSpan="12" Grid.Row="0" Grid.RowSpan="3" x:Name="vcropper" ></VSC:VideoSnapshotCropper>

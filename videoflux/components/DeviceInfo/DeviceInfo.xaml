@@ -1,9 +1,9 @@
-﻿<UserControl x:Class="videoflux.components.VideoInfo.VideoInfo"
+﻿<UserControl x:Class="videoflux.components.DeviceInfo.DeviceInfo"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:videoflux.components.VideoInfo"
+             xmlns:local="clr-namespace:videoflux.components.DeviceInfo"
              mc:Ignorable="d" 
              Loaded="UserControl_Loaded"
              d:DesignHeight="40" d:DesignWidth="800">
@@ -36,14 +36,43 @@
     <Border   Padding="5" Background="#bdbdbd">
         <WrapPanel VerticalAlignment="Center">
 
+            <!--
             <TextBlock Text="Nro. de equipo"></TextBlock>
             <TextBox IsReadOnly="True" Text="{Binding DeviceNumber, Mode=OneWay}"></TextBox>
             
             <TextBlock Text="|" Style="{StaticResource Separator}"></TextBlock>
 
             <TextBlock Text="{Binding CurrentTime}"></TextBlock>
- 
+            
+            <TextBlock Text="|" Style="{StaticResource Separator}"></TextBlock>
 
+            <TextBlock Text="{Binding TotalFines}"></TextBlock>-->
+            <TextBlock FontWeight="Bold">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Style.Setters>
+                            <Setter Property="Visibility" Value="Visible"></Setter>
+                        </Style.Setters>
+                        
+                        <Style.Triggers >
+                            <DataTrigger Binding="{Binding DeviceNumber}" Value="{x:Null}">
+                                <Setter Property="Visibility" Value="Hidden"></Setter>
+                            </DataTrigger>
+
+                        </Style.Triggers>
+                        
+                    </Style>
+                </TextBlock.Style>
+
+                <TextBlock.Text>
+                    <MultiBinding StringFormat="{} Nro. de equipo: {0} | Hora actual: {1} | Multas realizadas: {2} | Tiempo transcurrido: {3}">
+                        <Binding Path="DeviceNumber" />
+                        <Binding Path="CurrentTime" />
+                        <Binding Path="TotalFines" />
+                        <Binding Path="TimeElapsedFormatted"></Binding>
+                    </MultiBinding>
+                </TextBlock.Text>
+            </TextBlock>
 
 
 

@@ -80,8 +80,26 @@
                     <Border.Effect>
                         <DropShadowEffect Opacity="0.5" BlurRadius="20"  />
                     </Border.Effect>
-                    <Image  Stretch="Fill" Height="auto" Width="auto"  Source="{Binding SrcBitmap}"></Image>
+<!--
+                    <TextBlock Text="{Binding Time}"></TextBlock>-->
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"></RowDefinition>
+                            <RowDefinition Height="auto"></RowDefinition>
+                        </Grid.RowDefinitions>
+                         <Image Grid.Row="0" Stretch="Fill" Height="auto" Width="auto"  Source="{Binding SrcBitmap}"></Image>
+                        <TextBlock  Background="#212121" Foreground="White" Padding="5" Grid.Row="1">
+                             
+                            <TextBlock.Text>
+                                <MultiBinding StringFormat="{} Foto {0} - {1}">
+                                    <Binding Path="Number" />
+                                    <Binding Path="TimeFormatted" />
+                                </MultiBinding>
+                            </TextBlock.Text>
+                        </TextBlock>
 
+                    </Grid>
+                   
                 </Border>
 
             </Button>
@@ -121,10 +139,25 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
+            <Border VerticalAlignment="Center" >
 
+                <Border.Style>
+                    <Style TargetType="Border">
+
+                        <Setter Property="Visibility" Value="Visible"></Setter>
+                        <Style.Triggers >
+                            <DataTrigger Binding="{Binding HasSnapshots}" Value="True">
+                                <Setter Property="Visibility" Value="Hidden"></Setter>
+                            </DataTrigger> 
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+                
+                <TextBlock FontSize="15" TextAlignment="Center" >No hay capturas disponibles</TextBlock>
+            </Border>
 
             <StackPanel Grid.Column="0" Grid.Row="0" >
-
+ 
                 <ItemsControl  ItemsSource="{Binding SnapshotsCollection}" ItemTemplate="{StaticResource SnapshotsTemplate}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -135,6 +168,7 @@
                 </ItemsControl>
 
 
+                <!--
                 <ItemsControl  ItemsSource="{Binding SnapshotsPlaceholdersCollection}" ItemTemplate="{StaticResource SnapshotsPlaceholdersTemplate}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -142,7 +176,7 @@
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
 
-                </ItemsControl>
+                </ItemsControl>-->
 
 
             </StackPanel>
@@ -167,7 +201,7 @@
                             <ColumnDefinition Width="1*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
-                        <TextBox  services:SelectAllFocusBehavior.Enable="True" Grid.Column="0"  Text="{Binding H,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" ></TextBox>
+                        <TextBox   services:SelectAllFocusBehavior.Enable="True" Grid.Column="0"  Text="{Binding H,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" ></TextBox>
                         <TextBlock   FontWeight="Bold" FontSize="12"  Text=":" Grid.Column="1" TextAlignment="Center" VerticalAlignment="Center"></TextBlock>
                         <TextBox  services:SelectAllFocusBehavior.Enable="True" Grid.Column="2"  Text="{Binding M,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"  ></TextBox>
                         <TextBlock  FontWeight="Bold" FontSize="12"  Text=":" Grid.Column="3" TextAlignment="Center" VerticalAlignment="Center"></TextBlock>
@@ -175,7 +209,7 @@
 
                     </Grid>
 
-                    <Button Click="saveSnapshotsGroup" BorderThickness="0" Background="#43a047" Padding="2" >
+                    <Button   Click="saveSnapshotsGroup" BorderThickness="0" Background="#43a047" Padding="2" >
                         <Button.Content>
 
                             <WrapPanel >

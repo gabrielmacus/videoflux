@@ -192,11 +192,19 @@ namespace videoflux.components.VideoSnapshotCropper
 
         private CroppedBitmap GenerateCrop()
         {
+            /*
+            BitmapSource bSource = new BitmapImage(new Uri(@"C:\Users\Gabriel\Pictures\demo.jpeg"));
+            Int32Rect cropRect = new Int32Rect(0,0,200,200);
+            var bmpCropped = new CroppedBitmap(bSource,cropRect);
+            */
+
+            
             double width = border.ActualWidth;
             double height = border.ActualHeight;
 
-            RenderTargetBitmap bmpCopied = new RenderTargetBitmap((int)Math.Round(width), (int)Math.Round(height), 0, 0, PixelFormats.Default);
+            RenderTargetBitmap bmpCopied = new RenderTargetBitmap((int)Math.Round(width), (int)Math.Round(height), 0, 0, PixelFormats.Default);       
             DrawingVisual dv = new DrawingVisual();
+
             using (DrawingContext dc = dv.RenderOpen())
             {
                 VisualBrush vb = new VisualBrush(border);
@@ -210,9 +218,10 @@ namespace videoflux.components.VideoSnapshotCropper
             var cropRectHeight = (int)(Math.Round(Canvas.GetTop(rectangle)) + rectangle.StrokeThickness);
             var cropRectX = (int)(rectangle.ActualWidth - rectangle.StrokeThickness * 2);
             var cropRectY = (int)(rectangle.ActualHeight - rectangle.StrokeThickness * 2);
- 
+             
             Int32Rect cropRect = new Int32Rect(cropRectWidth, cropRectHeight, cropRectX, cropRectY);
-             CroppedBitmap bmpCropped = new CroppedBitmap(bmpCopied,cropRect);
+            CroppedBitmap bmpCropped = new CroppedBitmap(bmpCopied,cropRect);
+            
 
             return bmpCropped;
         }
@@ -221,6 +230,7 @@ namespace videoflux.components.VideoSnapshotCropper
         {
 
             Crop.Save();
+            
             SnapshotCropped.Invoke(sender, e, Crop.Snapshot);
         }
 
@@ -248,6 +258,7 @@ namespace videoflux.components.VideoSnapshotCropper
 
         public void Save()
         {
+             
             var fattr = new FileAttributes();
             if(File.Exists(Snapshot.Src))
             {
@@ -257,14 +268,20 @@ namespace videoflux.components.VideoSnapshotCropper
             FileStream fs = new FileStream(Snapshot.Src,FileMode.Create);
             File.SetAttributes(Snapshot.Src, fattr);
             PngBitmapEncoder encoder = new PngBitmapEncoder();
-            encoder.Frames.Add(BitmapFrame.Create(Src));
+            BitmapFrame bframe = BitmapFrame.Create(Src);
+            encoder.Frames.Add(bframe);
             encoder.Save(fs);
+            fs.Close();
+            fs.Dispose();
+
+
         }
 
         public CroppedBitmap Src
         {
             get
             {
+               
                 return src;
             }
             set

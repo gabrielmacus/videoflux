@@ -55,8 +55,9 @@
                 <Grid.Background>
                     <ImageBrush ImageSource="/Resources/images/pattern.png" Stretch="UniformToFill"/>
                 </Grid.Background>
-
+ 
                 <Image Name="image" Stretch="Uniform" Opacity="1" Source="{Binding Snapshot.SrcBitmap}" />
+                
                 <Canvas  Name="canvas" ></Canvas>
             </Grid>
 

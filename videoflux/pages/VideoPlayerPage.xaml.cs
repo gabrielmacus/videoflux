@@ -12,11 +12,13 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using videoflux.components.VideoInfo;
+using videoflux.components.DeviceInfo;
 using videoflux.components.VideoPlayer;
 using videoflux.components.VideoPlaylist;
 using videoflux.components.VideoSnapshots;
 using videoflux.components.VideoSnapshotCropper;
+using System.IO;
+using System.Threading;
 
 namespace videoflux.pages
 {
@@ -55,25 +57,50 @@ namespace videoflux.pages
         public event PropertyChangedEventHandler PropertyChanged;
 
          public void onSelectedVideo(object sender, RoutedEventArgs e)
-        { 
-            this.vplayer.Video = (Video)e.Source;
+        {
+            bool unsavedChanges = false;
+            if(this.vsnapshots.SnapshotsGroup != null)
+            {
+                foreach(KeyValuePair<int,Snapshot> entry in this.vsnapshots.SnapshotsGroup.Snapshots)
+                {
+                    FileInfo finfo = new FileInfo(entry.Value.Src);
+                    if(finfo.Name.Contains("tmp"))
+                    {
+                        unsavedChanges = true;
+                        break;
+                    }
+                }
+            }
 
-            this.vsnapshots.SnapshotsGroup = new SnapshotsGroup(this.vinfo.Info.DeviceNumber, this.vplayer.Video);
+            if(!unsavedChanges || MessageBox.Show("¿Seguro que desea cambiar de video? Tiene cambios sin guardar","Atención", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+            {
+                this.vplayer.Video = (Video)e.Source;
+                this.vsnapshots.SnapshotsGroup.Dispose();
+                this.vsnapshots.SnapshotsGroup.Video = this.vplayer.Video;
+            }
+
         }
 
-        
+        public void onSnapshotsGroupSaved(object sender,RoutedEventArgs e,SnapshotsGroup snapshotsGroup)
+        {
+            this.vinfo.Info.TotalFines = this.vinfo.Info.TotalFines + 1;
+            this.vsnapshots.SnapshotsGroup.Dispose();
+            this.vsnapshots.SnapshotsGroup.Video = this.vplayer.Video;
+
+        }
 
         public void onSnapshotTaken(object sender,RoutedEventArgs e,Snapshot snapshot)
         {
-            var sg = this.vsnapshots.SnapshotsGroup.Snapshots;
-            sg[snapshot.Number] = snapshot;
-            this.vsnapshots.SnapshotsGroup.Snapshots = sg;
+            
+
+            var snapshotsGroup = this.vsnapshots.SnapshotsGroup.Snapshots;
+            snapshotsGroup[snapshot.Number] = snapshot;
+            this.vsnapshots.SnapshotsGroup.Snapshots = snapshotsGroup;
         
             if(snapshot.Number == 1)
             {
-                this.vplayer.Video.Pause();
-                this.vplayer.Visibility = Visibility.Hidden; 
-    
+                this.vplayer.Video.Pause(); 
+                this.vplayer.Visibility = Visibility.Hidden;  
                 Crop Crop = new Crop(snapshot);
                 this.vcropper.Crop = Crop;
             }
@@ -83,27 +110,38 @@ namespace videoflux.pages
         public void onSnapshotCropped(object sender, RoutedEventArgs e, Snapshot snapshot)
         {
             this.vcropper.Crop = null;
-            this.vsnapshots.SnapshotsGroup.Snapshots[1] = snapshot;
+            Dictionary<int, Snapshot> snapshots = this.vsnapshots.SnapshotsGroup.Snapshots;
+            snapshots[1] = snapshot;
+            this.vsnapshots.SnapshotsGroup.Snapshots = snapshots;
             this.vplayer.Visibility = Visibility.Visible;
-       
-            GC.Collect();
+            this.vplayer.Focus();
         }
 
         public void onLoadedPlaylist(object sender, RoutedEventArgs e)
         {
-            Info info = new Info();
-            info.VideosDir = (string)e.Source;
-            this.vinfo.Info = info; 
-
+            
+            
+            Info info = new Info((string)e.Source); 
+            this.vinfo.Info = info;
+            this.vsnapshots.SnapshotsGroup = new SnapshotsGroup(info.DeviceNumber);
         }
+
+
+
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            
+             
+
             /*
             Snapshot snapshot = new Snapshot(@"C:\Users\Gabriel\Pictures\Demo\highway-cars-wallpaper-1.jpg", 1,10000);
             Crop Crop = new Crop(snapshot);
             this.vcropper.Crop = Crop;*/
+        }
+
+        private void Page_KeyDown(object sender, KeyEventArgs e)
+        {
+            //Console.WriteLine(e.Key);
         }
     }
 

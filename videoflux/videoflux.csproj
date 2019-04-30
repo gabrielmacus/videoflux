@@ -132,7 +132,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="components\VideoInfo\VideoInfo.xaml">
+    <Page Include="components\DeviceInfo\DeviceInfo.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -160,8 +160,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="components\VideoInfo\VideoInfo.xaml.cs">
-      <DependentUpon>VideoInfo.xaml</DependentUpon>
+    <Compile Include="components\DeviceInfo\DeviceInfo.xaml.cs">
+      <DependentUpon>DeviceInfo.xaml</DependentUpon>
     </Compile>
     <Compile Include="components\VideoPlayer\VideoPlayer.xaml.cs" />
     <Compile Include="components\VideoPlaylist\VideoPlaylist.xaml.cs">

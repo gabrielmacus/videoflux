@@ -27,7 +27,7 @@
 
                     <Border Padding="10">
 
-                        <Image  Source="{Binding Thumbnail}"></Image>
+                        <Image  Source="{Binding ThumbnailSrc}"></Image>
                     </Border>
 <!-- 
                     <Label Background="#212121" Foreground="White"   FontSize="11" Content="{Binding ParsedDuration}" Padding="3"  HorizontalAlignment="Left" VerticalAlignment="Bottom"></Label>
@@ -63,7 +63,7 @@
  
    
 
-        <ScrollViewer Grid.Column="1" Background="#e0e0e0"  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+        <ScrollViewer Focusable="False"  Grid.Column="1" Background="#e0e0e0"  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
 
 
             <ScrollViewer.Style>
@@ -93,7 +93,7 @@
         </ScrollViewer>
 
 
-        <ScrollViewer Grid.Column="1" Background="#e0e0e0"  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+        <ScrollViewer Focusable="False"  Grid.Column="1" Background="#e0e0e0"  HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
 
 
             <ScrollViewer.Style>

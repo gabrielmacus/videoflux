@@ -8,13 +8,14 @@
              xmlns:vlc="clr-namespace:Vlc.DotNet.Forms;assembly=Vlc.DotNet.Forms"
              mc:Ignorable="d" Background="#FF212121" d:DesignHeight="355" d:DesignWidth="596"
              Loaded="UserControlLoaded"
-
+             Focusable="True"
+MouseUp="focusOnVideo"
              >
-
+ 
     <UserControl.Resources>
 
- 
-        
+   
+
         <Style x:Key="ControlButton" TargetType="Button">
             <Setter Property="OverridesDefaultStyle" Value="True" />
             <Setter Property="Cursor" Value="Hand" />
@@ -87,8 +88,8 @@
 
 
 
-            <Border Grid.Row="0" Grid.Column="0">
-                <WindowsFormsHost Name="videoVlc">
+            <Border Grid.Row="0" Grid.Column="0" >
+                <WindowsFormsHost Name="videoVlc"  >
                 </WindowsFormsHost>
 
                 <Border.Style>
@@ -110,7 +111,7 @@
 
             <Border Grid.Row="0" Grid.Column="0">
 
-                <Image Source="{Binding Thumbnail}"></Image>
+                <Image Source="{Binding ThumbnailSrc}"></Image>
                 <Border.Style>
                     <Style TargetType="Border">
 
