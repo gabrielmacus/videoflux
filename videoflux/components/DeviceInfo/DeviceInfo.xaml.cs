@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using videoflux.components.VideoPlayer;
 
 namespace videoflux.components.DeviceInfo
 {
@@ -52,13 +53,15 @@ namespace videoflux.components.DeviceInfo
         }
     }
      
+    [Serializable]
     public class Info : INotifyPropertyChanged
     { 
         string videosFolder;
         int deviceNumber;
         int totalFines = 0;
         DateTime timeStarted = DateTime.Now;
- 
+        Video lastVideo;
+
         public int TotalFines
         {
             get { return totalFines; }
@@ -69,6 +72,12 @@ namespace videoflux.components.DeviceInfo
             }
         }
 
+        public Video LastVideo
+        {
+            get { return lastVideo; }
+            set { lastVideo = value; NotifyPropertyChanged("LastVideo"); }
+        }
+        [field: NonSerialized]
         public string CurrentTime
         {
             get
@@ -152,7 +161,7 @@ namespace videoflux.components.DeviceInfo
             t.Enabled = true;
             t.Start();
         }
-
+         
         protected void NotifyPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
@@ -160,6 +169,7 @@ namespace videoflux.components.DeviceInfo
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+        [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
 
     }

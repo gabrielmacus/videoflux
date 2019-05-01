@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vp="clr-namespace:videoflux.components.VideoPlayer"
              xmlns:local="clr-namespace:videoflux.components.VideoPlaylist"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
@@ -13,28 +14,119 @@
     <UserControl.Resources>
 
         <DataTemplate x:Key="VideoTemplate">
+            <Border Padding="10"  >
 
-            <Button Click="selectVideo"   Tag="{Binding}"  Focusable="False" Cursor="Hand" BorderThickness="0 0 1 0" BorderBrush="#bdbdbd" Width="120" Padding="10"   >
+                <Border.Style>
+                    <Style TargetType="Border">
+                        <Style.Triggers >
+                            <!--- DataContext.CurrentVideo.Src, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}} -->
+                           <!-- <DataTrigger Binding="{Binding  Src}" Value="{x:Binding Src}">
+
+                                <Setter Property="Background" Value="Red"></Setter>
+                            </DataTrigger>-->
+        
+
+                        </Style.Triggers>
+                    </Style>
+                </Border.Style>
+
                 <Grid>
-                    
-                    <fa:ImageAwesome Icon="Spinner" Foreground="#424242" Spin="True" Height="23" >
-                        <fa:ImageAwesome.Style>
-                            <Style TargetType="fa:ImageAwesome">
-                                
-                            </Style>
-                        </fa:ImageAwesome.Style>
-                    </fa:ImageAwesome>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"></RowDefinition> 
+                    <RowDefinition Height="auto"></RowDefinition>
+                </Grid.RowDefinitions>
+                    <Button Grid.Row="0" Click="selectVideo"   Tag="{Binding}"  Focusable="False" Cursor="Hand" BorderThickness="0 0 1 0" BorderBrush="#bdbdbd" Width="120"  >
+                    <Grid>
 
-                    <Border Padding="10">
+                        <fa:ImageAwesome Icon="Spinner" Foreground="#424242" Spin="True" Height="23" >
+                            <fa:ImageAwesome.Style>
+                                    <Style TargetType="fa:ImageAwesome">
+                                    </Style>
+                            </fa:ImageAwesome.Style>
+                        </fa:ImageAwesome>
 
-                        <Image  Source="{Binding ThumbnailSrc}"></Image>
-                    </Border>
-<!-- 
+                        
+                        <Image  Source="{Binding ThumbnailSrc}" Stretch="UniformToFill"></Image>
+
+                            <TextBlock Text="{Binding Fines}" ToolTip="Cantidad de multas" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" Background="Black" Padding="3"></TextBlock>
+                        <!-- 
                     <Label Background="#212121" Foreground="White"   FontSize="11" Content="{Binding ParsedDuration}" Padding="3"  HorizontalAlignment="Left" VerticalAlignment="Bottom"></Label>
 -->
+                    </Grid>
+
+                </Button>
+                <Button  ToolTip="Marca el video como completado" Tag="{Binding}" Click="markVideoAsDone" FontSize="11" Grid.Row="1" Background="#388e3c" Foreground="White" VerticalAlignment="Center" >
+                        <WrapPanel  >
+                            <TextBlock FontWeight="Bold" Padding="4">Marcar</TextBlock>
+                            <fa:ImageAwesome Icon="Check" Foreground="White"  Height="8" />
+                        </WrapPanel>
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="OverridesDefaultStyle" Value="True" />
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Name="border" BorderThickness="0" BorderBrush="Black" Background="{TemplateBinding Background}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Opacity" Value="0.8" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers >
+                                    <DataTrigger Binding="{Binding VideoStatus}" Value="{x:Static vp:VIDEO_STATUS.DONE}">
+                                        <Setter Property="Visibility" Value="Hidden"></Setter>
+                                    </DataTrigger>
+
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                </Button>
+
+                <Button ToolTip="Marca el video como no completado"  Tag="{Binding}" Click="markVideoAsNotDone" FontSize="11" Grid.Row="1" Background="#c62828" Foreground="White" VerticalAlignment="Center" >
+                        <WrapPanel  >
+                            <TextBlock FontWeight="Bold" Padding="4">Desmarcar</TextBlock>
+                            <fa:ImageAwesome Icon="Times" Foreground="White"  Height="8" />
+                        </WrapPanel>
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="OverridesDefaultStyle" Value="True" />
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Name="border" BorderThickness="0" BorderBrush="Black" Background="{TemplateBinding Background}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Opacity" Value="0.8" />
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Style.Triggers >
+                                    <DataTrigger Binding="{Binding VideoStatus}" Value="{x:Static vp:VIDEO_STATUS.NOT_DONE}">
+                                        <Setter Property="Visibility" Value="Hidden"></Setter>
+                                    </DataTrigger>
+
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+
                 </Grid>
-               
-            </Button>
+            </Border>
+
+       
+              
         </DataTemplate>
 
 

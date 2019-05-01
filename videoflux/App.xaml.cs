@@ -16,7 +16,10 @@ namespace videoflux
 
             var application = new App();
             application.InitializeComponent();
+
+
             application.Run();
+
         }
     }
 

@@ -8,6 +8,7 @@ using videoflux.components.VideoPlayer;
 
 using MessageBox = System.Windows.Forms.MessageBox;
 using Button = System.Windows.Controls.Button;
+using System.Collections.ObjectModel;
 
 namespace videoflux.components.VideoPlaylist
 {
@@ -66,6 +67,10 @@ namespace videoflux.components.VideoPlaylist
 
         Playlist playlist;
 
+        public Playlist Playlist
+        {
+            get { return playlist;  }
+        }
 
         public VideoPlaylist()
         {
@@ -109,14 +114,25 @@ namespace videoflux.components.VideoPlaylist
  
         }
 
+        public void markVideoAsDone(object sender, RoutedEventArgs e)
+        {
+            var button = (Button)sender;
+            ((Video)button.Tag).VideoStatus = VIDEO_STATUS.DONE;
+        }
+        public void markVideoAsNotDone(object sender, RoutedEventArgs e)
+        {
+            var button = (Button)sender;
+            ((Video)button.Tag).VideoStatus = VIDEO_STATUS.NOT_DONE;
+        }
+
     }
 
-  
+
 
     public class Playlist : INotifyPropertyChanged
     {
 
-        List<Video> videos = new List<Video>();
+        ObservableCollection<Video> videos = new ObservableCollection<Video>();
         protected Video currentVideo;
 
         public static string[] allowedExtensions = { ".mp4",".avi" };
@@ -142,7 +158,7 @@ namespace videoflux.components.VideoPlaylist
         }
 
 
-        public List<Video> Videos
+        public ObservableCollection<Video> Videos
         {
             get { return videos; }
             set
@@ -159,11 +175,13 @@ namespace videoflux.components.VideoPlaylist
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+
+        [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
 
         public bool loadFromFolder(string path)
         {
-            List<Video> videos = new List<Video>();
+            ObservableCollection<Video> videos = new ObservableCollection<Video>();
 
             DirectoryInfo directoryInfo = new DirectoryInfo(path);
             FileInfo[] files = directoryInfo.GetFiles();

@@ -231,9 +231,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="License-LGPL.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\images\pattern.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -24,6 +24,9 @@ namespace videoflux
             InitializeComponent();
         }
 
-       
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            this.Title = "Videoflux "+System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+        }
     }
 }

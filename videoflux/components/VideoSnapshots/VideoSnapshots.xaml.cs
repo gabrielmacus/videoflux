@@ -11,6 +11,7 @@ using NReco.VideoConverter;
 using System.Linq;
 using videoflux.components.VideoPlayer;
 using System.Windows.Controls.Primitives;
+using System.Threading;
 
 namespace videoflux.components.VideoSnapshots
 {
@@ -64,39 +65,39 @@ namespace videoflux.components.VideoSnapshots
 
         private void saveSnapshotsGroup(object sender,RoutedEventArgs e)
         {
+            if (snapshotsGroup == null || snapshotsGroup.Snapshots == null || snapshotsGroup.Snapshots.Count != 3)
+            {
+                MessageBox.Show("Debe realizar las 3 capturas requeridas antes de guardar", "Error al guardar", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            if (snapshotsGroup.Snapshots[2].Time >= snapshotsGroup.Snapshots[3].Time)
+            {
+                MessageBox.Show("La foto 2 debe ser anterior en el video a la foto 3", "Error al guardar", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            var Handler = new Action<FFMpegException>((FFMpegException exception) => {
+                MessageBox.Show($"Error al generar el corte de video para la patente {snapshotsGroup.LicensePlate} (Tiempo de video: {snapshotsGroup.H}:{snapshotsGroup.M}:{snapshotsGroup.S}). Inténtelo nuevamente", "Error al guardar", MessageBoxButton.OK, MessageBoxImage.Error);
+                Console.WriteLine(exception.Message);
+            });
+
             try
             {
-                if(snapshotsGroup == null || snapshotsGroup.Snapshots == null || snapshotsGroup.Snapshots.Count != 3)
-                {
-                    MessageBox.Show("Debe realizar las 3 capturas requeridas antes de guardar", "Error al guardar", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
+                snapshotsGroup.Save(Handler);
 
-                if (snapshotsGroup.Snapshots[2].Time >= snapshotsGroup.Snapshots[3].Time)
-                {
-                    MessageBox.Show("La foto 2 debe ser anterior en el video a la foto 3", "Error al guardar", MessageBoxButton.OK, MessageBoxImage.Error);
-                    return;
-                }
-
-
-                snapshotsGroup.Save();
-                SnapshotsGroupSaved.Invoke(sender, e, snapshotsGroup);
-            }
-            catch (FFMpegException ffmpegException)
-            {
-
-                MessageBox.Show("Error al generar el corte de video. Inténtelo nuevamente");
-                Console.WriteLine(ffmpegException.Message);
-                return;
             }
             catch(Exception exception)
             {
                 MessageBox.Show("Error al guardar las capturas. Inténtelo nuevamente", "Error al guardar", MessageBoxButton.OK, MessageBoxImage.Error);
                 Console.WriteLine(exception.Message);
                 Console.WriteLine(exception.StackTrace);
-
                 return;
             }
+
+            SnapshotsGroupSaved.Invoke(sender, e, snapshotsGroup);
+
+         
    
         }
 
@@ -231,24 +232,32 @@ namespace videoflux.components.VideoSnapshots
         }
 
 
-        public void Save()
+        public void Save(Action<FFMpegException> handler)
         {
             #region Save video
             var from = Convert.ToInt32(Math.Floor((double)Snapshots[2].Time / 1000));
             var to = Convert.ToInt32(Math.Ceiling((double)Snapshots[3].Time / 1000));
-
-
             var i = this.Video.Src;
             var o = $@"{new FileInfo(this.Video.Src).Directory.FullName}\capturas\{LicensePlate}-{TimeFormatted}-{DeviceNumber}.mp4";
             var ffMpegConverter = new FFMpegConverter();
             var t = to - from;
-            var cmd = $"-i \"{i}\" -ss {from} -t {t} -preset superfast -c:v libx264 -an -crf 40  {o}";
+            var cmd = $"-i \"{i}\" -ss {from} -t {t} -preset superfast -c:v libx264 -an -crf 25  {o}";
 
-            ffMpegConverter.Invoke(cmd);
+            //Process video in background
+            new Thread(new ThreadStart(() =>
+            {
+                try
+                {
+                    ffMpegConverter.Invoke(cmd);
+                }
+                catch(FFMpegException e)
+                {
+                    handler(e);
+                }
 
-        
+            })).Start();
             #endregion
-
+             
             #region Save Images
             foreach (Snapshot entry in SnapshotsCollection)
             {

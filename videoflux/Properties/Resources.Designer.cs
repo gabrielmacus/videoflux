@@ -59,5 +59,14 @@ namespace videoflux.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a Videoflux.
+        /// </summary>
+        internal static string AppName {
+            get {
+                return ResourceManager.GetString("AppName", resourceCulture);
+            }
+        }
     }
 }

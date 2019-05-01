@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:videoflux" 
         mc:Ignorable="d"
-        Title="MainWindow" Height="627" Width="1023.834">
+        Loaded="Window_Loaded"
+        Height="627" Width="1023.834">
 
  
     

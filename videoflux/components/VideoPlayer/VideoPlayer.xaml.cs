@@ -6,6 +6,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using videoflux.components.DeviceInfo;
@@ -110,8 +111,10 @@ namespace videoflux.components.VideoPlayer
         {
             var videoVlc = new Vlc.DotNet.Forms.VlcControl();
             videoVlc.BeginInit();
-            videoVlc.VlcLibDirectory = new DirectoryInfo(@"C:\Users\Gabriel\Downloads\vlc-3.0.6-win64\vlc-3.0.6");
-            videoVlc.VlcMediaplayerOptions = new[] { "--input-fast-seek" }; 
+
+            var arch = (IntPtr.Size == 4) ? "x86" : "x64";
+            videoVlc.VlcLibDirectory = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"libvlc\win-{arch}"));
+           // videoVlc.VlcMediaplayerOptions = new[] { "--input-fast-seek" }; 
             videoVlc.EndInit();
             
             this.videoVlc.Child = videoVlc;
@@ -147,6 +150,14 @@ namespace videoflux.components.VideoPlayer
             
         }
 
+        public void setSpeed(object sender, RoutedEventArgs e)
+        {
+            var button = (Button)sender;
+            var speed = UInt16.Parse(button.Tag.ToString());
+  
+            Video.Speed = speed;
+
+        }
         public void onKeyDown(object sender, KeyEventArgs e)
         {
             
@@ -176,7 +187,7 @@ namespace videoflux.components.VideoPlayer
                     { 
 
                         fastForward(sender, e);
-                        Thread.Sleep(100);
+                        Thread.Sleep(200);
                     }
 
                     e.Handled = true;
@@ -191,6 +202,7 @@ namespace videoflux.components.VideoPlayer
             
                         prevFrame(sender, e);
 
+                        Thread.Sleep(200);
                     }
                     else
                     {
@@ -198,25 +210,58 @@ namespace videoflux.components.VideoPlayer
 
                     }
 
-                    Thread.Sleep(100);
+                    Thread.Sleep(200);
                     e.Handled = true;
 
                     break;
 
                 case Key.F1:
-
-                    SnapshotTaken.Invoke(sender, e, this.Video.Snapshot(1));
+                    Snapshot s1 = this.Video.Snapshot(1);
+                    if (s1 != null)
+                    {
+                        SnapshotTaken.Invoke(sender, e, s1);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error al capturar la imagen. Inténtelo nuevamente.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                     e.Handled = true;
                     break;
                 case Key.F2:
-
-                    SnapshotTaken.Invoke(sender, e, this.Video.Snapshot(2));
+                    Snapshot s2 = this.Video.Snapshot(2);
+                    if(s2 != null)
+                    {
+                        SnapshotTaken.Invoke(sender, e, s2);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error al capturar la imagen. Inténtelo nuevamente.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                     e.Handled = true;
                     break;
                 case Key.F3:
-                   SnapshotTaken.Invoke(sender, e, this.Video.Snapshot(3));
+                    Snapshot s3 = this.Video.Snapshot(3);
+                    if(s3 != null)
+                    {
+                        SnapshotTaken.Invoke(sender, e, s3);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error al capturar la imagen. Inténtelo nuevamente.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                     e.Handled = true;
                     break;
+                case Key.Add:
+
+                    Video.Speed = Video.Speed + 1;
+                    e.Handled = true; 
+                    break;
+
+                case Key.Subtract:
+                    Video.Speed = Video.Speed - 1;
+                    e.Handled = true;
+                    break;
+
             }
    
         }
@@ -257,16 +302,24 @@ namespace videoflux.components.VideoPlayer
         {
             this.Focus();
         }
+
+
+      
+
     }
 
 
 
+
+
     public enum MEDIA_STATUS : int { STOPPED = 1, PAUSED = 2, PLAYING = 3,NO_MEDIA=4 };
+    public enum VIDEO_STATUS : int { NOT_DONE = 2, DONE = 1};
 
-
+    [Serializable]
     public class Video : INotifyPropertyChanged
     {
-       
+
+        protected int fines = 0;
         protected MEDIA_STATUS status = MEDIA_STATUS.NO_MEDIA;
         protected string thumbnail;
         protected string name;
@@ -274,6 +327,8 @@ namespace videoflux.components.VideoPlayer
         protected long duration = -1;
         protected uint speed = 1; 
         protected Vlc.DotNet.Forms.VlcControl control;
+        protected uint maxSpeed = 5;
+        protected VIDEO_STATUS videoStatus = VIDEO_STATUS.NOT_DONE;
 
         #region Constructors
 
@@ -286,11 +341,35 @@ namespace videoflux.components.VideoPlayer
 
         #region Setters/Getters
 
+        public int Fines
+        {
+            get { return fines; }
+            set
+            {
+                fines = value;
+                NotifyPropertyChanged("Fines");
+            }
+        }
+
         public uint Speed
         {
             get { return speed; }
             set {
-                control.Rate = (float)value;
+
+                if(IsMediaPresent)
+                {
+                    if (value < 1)
+                    {
+                        value = 1;
+                    }
+                    else if (value > maxSpeed)
+                    {
+                        value = maxSpeed;
+                    }
+
+                    control.Rate = (float)value;
+                }
+        
                 speed = value ;
                 NotifyPropertyChanged("Speed");
             }
@@ -399,6 +478,15 @@ namespace videoflux.components.VideoPlayer
             }
         }
 
+        public VIDEO_STATUS VideoStatus
+        {
+            get { return videoStatus; }
+            set
+            {
+                videoStatus = value;
+                NotifyPropertyChanged("VideoStatus");
+            }
+        }
         public MEDIA_STATUS Status
         {
             get { return status; }
@@ -506,13 +594,13 @@ namespace videoflux.components.VideoPlayer
             {
                 return false;
             } 
-            control.Time = control.Time - 2000;
+            control.Time = control.Time - 350;
             return true;
 
         }
         public Snapshot Snapshot(int number)
         {
-            if (control != null && control.VlcMediaPlayer.GetMedia() != null)
+            if (IsMediaPresent)
             {
                 FileInfo fileInfo = new FileInfo(new Uri(this.Src).LocalPath);
                 string dir = Path.Combine(fileInfo.DirectoryName, "capturas");
@@ -523,12 +611,14 @@ namespace videoflux.components.VideoPlayer
                 {
                     File.Delete(path);
                 }
-
-                control.TakeSnapshot(path, 0, 0);
-                File.SetAttributes(path, FileAttributes.Hidden);
-
-                Snapshot snapshot = new Snapshot(path,number,control.Time); 
-                return snapshot;
+                 
+                if(control.TakeSnapshot(path, 0, 0) && File.Exists(path))
+                {
+                    File.SetAttributes(path, FileAttributes.Hidden);
+                    Snapshot snapshot = new Snapshot(path, number, control.Time);
+                    return snapshot;
+                }
+              
             }
             return null;
             
@@ -567,6 +657,8 @@ namespace videoflux.components.VideoPlayer
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+
+        [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
 
     }

@@ -19,6 +19,8 @@ using videoflux.components.VideoSnapshots;
 using videoflux.components.VideoSnapshotCropper;
 using System.IO;
 using System.Threading;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace videoflux.pages
 {
@@ -77,6 +79,7 @@ namespace videoflux.pages
                 this.vplayer.Video = (Video)e.Source;
                 this.vsnapshots.SnapshotsGroup.Dispose();
                 this.vsnapshots.SnapshotsGroup.Video = this.vplayer.Video;
+                this.vinfo.Info.LastVideo = this.vplayer.Video;
             }
 
         }
@@ -84,6 +87,7 @@ namespace videoflux.pages
         public void onSnapshotsGroupSaved(object sender,RoutedEventArgs e,SnapshotsGroup snapshotsGroup)
         {
             this.vinfo.Info.TotalFines = this.vinfo.Info.TotalFines + 1;
+            this.vplayer.Video.Fines = this.vplayer.Video.Fines + 1;
             this.vsnapshots.SnapshotsGroup.Dispose();
             this.vsnapshots.SnapshotsGroup.Video = this.vplayer.Video;
 
@@ -119,15 +123,45 @@ namespace videoflux.pages
 
         public void onLoadedPlaylist(object sender, RoutedEventArgs e)
         {
-            
-            
             Info info = new Info((string)e.Source); 
             this.vinfo.Info = info;
+
+            #region Save state
+            info.PropertyChanged += delegate
+             {
+                //Console.WriteLine("Info changed");
+
+                 //SaveState(info);
+             };
+            this.vplaylist.Playlist.PropertyChanged += delegate {
+
+                Console.WriteLine("Playlist changed");
+                //SaveState(this.vplaylist.Playlist);
+
+            };
+            foreach(Video video in this.vplaylist.Playlist.Videos)
+            {
+                video.PropertyChanged += (object sender, PropertyChangedEventArgs e) => {
+
+                };
+            }
+
+            #endregion
+
             this.vsnapshots.SnapshotsGroup = new SnapshotsGroup(info.DeviceNumber);
+
+ 
         }
 
 
+        private void SaveState(Object obj)
+        {
+            IFormatter formatter = new BinaryFormatter();
+            Stream stream = new FileStream(@"I:\2019-02-16_4(DALILA)\demo.dat", FileMode.Create,FileAccess.Write);
+            formatter.Serialize(stream, obj);
+            stream.Close();
 
+        }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
