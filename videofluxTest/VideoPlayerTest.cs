@@ -82,7 +82,7 @@ namespace videofluxTest
             Assert.AreEqual(false, video.Play());
             video.Control = vlcControl;
             Assert.AreEqual(false, video.Play());
-            video.Src = @"C:\Users\Gabriel\Videos\bird.avi";
+            video.Src = @"I:\2019-02-16_4(DALILA)\+Cámara desconoc.1_20190216085017.avi";
             ManualResetEvent statsUpdatedEvent = new ManualResetEvent(false);
             bool playingEventFired = false;
             vlcControl.Playing += delegate
@@ -90,7 +90,7 @@ namespace videofluxTest
                 playingEventFired = true;
             };
             Assert.AreEqual(true, video.Play());
-            statsUpdatedEvent.WaitOne(2500, false);
+            statsUpdatedEvent.WaitOne(4500, false);
             Assert.AreEqual(true, playingEventFired);
         }
 

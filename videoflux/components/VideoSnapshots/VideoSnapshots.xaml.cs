@@ -12,6 +12,7 @@ using System.Linq;
 using videoflux.components.VideoPlayer;
 using System.Windows.Controls.Primitives;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace videoflux.components.VideoSnapshots
 {
@@ -241,40 +242,48 @@ namespace videoflux.components.VideoSnapshots
             var o = $@"{new FileInfo(this.Video.Src).Directory.FullName}\capturas\{LicensePlate}-{TimeFormatted}-{DeviceNumber}.mp4";
             var ffMpegConverter = new FFMpegConverter();
             var t = to - from;
-            var cmd = $"-i \"{i}\" -ss {from} -t {t} -preset superfast -c:v libx264 -an -crf 25  {o}";
-
+            var cmd = $"-i \"{i}\" -ss {from} -t {t} -preset ultrafast -c:v libx264  -crf 40 -an {o}";
+            
             //Process video in background
-            new Thread(new ThreadStart(() =>
-            {
+            var task = new Task(new Action(delegate {
+
                 try
                 {
                     ffMpegConverter.Invoke(cmd);
                 }
-                catch(FFMpegException e)
+                catch (FFMpegException e)
                 {
                     handler(e);
                 }
 
-            })).Start();
+            }));
+            task.Start();
             #endregion
-             
+
             #region Save Images
+            var folderPath = new FileInfo(SnapshotsCollection[0].Src).Directory.FullName;
             foreach (Snapshot entry in SnapshotsCollection)
             {
                 if(File.Exists(entry.Src)) 
                 { 
-                    var dest = $"{new FileInfo(entry.Src).Directory.FullName}/{LicensePlate}-{TimeFormatted}-F{entry.Number}-{DeviceNumber}.png";
+                    var dest = $"{folderPath}/{LicensePlate}-{TimeFormatted}-F{entry.Number}-{DeviceNumber}.png";
                     if(dest != entry.Src)
                     {
+                        /*
                         if (File.Exists(dest))
                         {
                             File.Delete(dest);
-                        }
+                        }*/
 
-                        File.Copy(entry.Src, dest);
+                        var src = entry.Src;
+                        File.Copy(src, dest);
                         File.SetAttributes(dest, ~FileAttributes.Hidden & ~FileAttributes.ReadOnly & ~FileAttributes.System);
 
-                        File.Delete(entry.Src);
+                        ThreadPool.QueueUserWorkItem(delegate {
+
+                            File.Delete(src);
+                        });
+
                         entry.Src = dest;
                     }
                 

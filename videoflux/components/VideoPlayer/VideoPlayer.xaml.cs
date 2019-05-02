@@ -106,15 +106,28 @@ namespace videoflux.components.VideoPlayer
         }
 
          
+        public void seekOnProgressbar(object sender, MouseEventArgs e)
+        {
+            var pbar = (ProgressBar)sender;
+            var percent = (e.GetPosition(pbar).X * 100) / pbar.ActualWidth;
+            percent = percent > 100 ? 100 : percent;
+
+            Video.Play();
+            pbar.Value = percent;
+           
+            //Video.Position = (float)percent;
+        }
 
         public void UserControlLoaded(object sender, RoutedEventArgs e)
         {
+
+
             var videoVlc = new Vlc.DotNet.Forms.VlcControl();
             videoVlc.BeginInit();
 
             var arch = (IntPtr.Size == 4) ? "x86" : "x64";
             videoVlc.VlcLibDirectory = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"libvlc\win-{arch}"));
-           // videoVlc.VlcMediaplayerOptions = new[] { "--input-fast-seek" }; 
+            videoVlc.VlcMediaplayerOptions = new[] { "--input-fast-seek" }; 
             videoVlc.EndInit();
             
             this.videoVlc.Child = videoVlc;
@@ -160,7 +173,7 @@ namespace videoflux.components.VideoPlayer
         }
         public void onKeyDown(object sender, KeyEventArgs e)
         {
-            
+
             switch (e.Key)
             {
                 case Key.Space:
@@ -175,20 +188,26 @@ namespace videoflux.components.VideoPlayer
 
                     }
                     e.Handled = true;
-
                     break;
                 case Key.Right:
-                    if (Video.Status == MEDIA_STATUS.PAUSED /*(e.KeyboardDevice.Modifiers & ModifierKeys.Control) == ModifierKeys.Control*/)
-                    {
-                        nextFrame(sender, e);
 
-                    }
-                    else
-                    { 
+                    new Thread(new ThreadStart(delegate {
 
-                        fastForward(sender, e);
-                        Thread.Sleep(200);
-                    }
+                        if (Video.Status == MEDIA_STATUS.PAUSED /*(e.KeyboardDevice.Modifiers & ModifierKeys.Control) == ModifierKeys.Control*/)
+                        {
+                            nextFrame(sender, e);
+
+                        }
+                        else
+                        {
+
+                            fastForward(sender, e);
+                            //   Thread.Sleep(100);
+                        }
+
+
+                    })).Start();
+
 
                     e.Handled = true;
 
@@ -196,21 +215,25 @@ namespace videoflux.components.VideoPlayer
 
                 case Key.Left:
 
-                    if (Video.Status == MEDIA_STATUS.PAUSED /*(e.KeyboardDevice.Modifiers & ModifierKeys.Control) == ModifierKeys.Control*/)
+                    new Thread(new ThreadStart(delegate
                     {
-                        
-            
-                        prevFrame(sender, e);
 
-                        Thread.Sleep(200);
-                    }
-                    else
-                    {
-                        rewind(sender, e);
+                        if (Video.Status == MEDIA_STATUS.PAUSED /*(e.KeyboardDevice.Modifiers & ModifierKeys.Control) == ModifierKeys.Control*/)
+                        {
 
-                    }
 
-                    Thread.Sleep(200);
+                            prevFrame(sender, e);
+                             
+                        }
+                        else
+                        {
+                            rewind(sender, e);
+                            //   Thread.Sleep(100);
+                        }
+
+                    })).Start();
+
+                 
                     e.Handled = true;
 
                     break;
@@ -293,11 +316,7 @@ namespace videoflux.components.VideoPlayer
             this.Video.NextFrame();
         }
 
-        public void seekProgressBar(object sender, RoutedEventArgs e)
-        {
-
-        }
-
+    
         private void focusOnVideo(object sender, MouseButtonEventArgs e)
         {
             this.Focus();
@@ -325,6 +344,7 @@ namespace videoflux.components.VideoPlayer
         protected string name;
         protected string src;
         protected long duration = -1;
+        protected float position = 0;
         protected uint speed = 1; 
         protected Vlc.DotNet.Forms.VlcControl control;
         protected uint maxSpeed = 5;
@@ -340,6 +360,16 @@ namespace videoflux.components.VideoPlayer
         #endregion
 
         #region Setters/Getters
+
+        public float Position
+        {
+            get { return position * 100; }
+            set
+            {
+                this.Control.Position = (value > 0)?value / 100: value;
+            }
+
+        }
 
         public int Fines
         {
@@ -389,7 +419,54 @@ namespace videoflux.components.VideoPlayer
                 {
                       duration = control.Length;
 
+                };
+                control.PositionChanged += delegate
+                { 
+                    position = this.Control.Position;
+                    NotifyPropertyChanged("Position");
+                };
+                control.Paused += delegate
+                {
+                    Status = MEDIA_STATUS.PAUSED;
+                };
+                control.Stopped += delegate
+                {
+                    Status = MEDIA_STATUS.STOPPED;
                 }; 
+                control.Playing += delegate
+                {
+                    Status = MEDIA_STATUS.PLAYING;
+                };
+   
+                control.EndReached += delegate
+                {
+
+                    ThreadPool.QueueUserWorkItem(delegate {
+
+                        control.ResetMedia();
+                        Src = src;
+
+
+                    });
+
+
+                    Console.WriteLine("END");
+                   
+              
+                    //control.Stop();
+                    //control.Stop();
+                    //control.ResetMedia();
+                };
+                control.MediaChanged += delegate
+                {
+                    if (!IsMediaPresent)
+                    {
+
+                        Status = MEDIA_STATUS.NO_MEDIA;
+                    }
+                };
+
+
             }
             get { return control; }
         }
@@ -516,13 +593,9 @@ namespace videoflux.components.VideoPlayer
             {
                 return false;
             }
-
-            Status = MEDIA_STATUS.PLAYING;
-             
+            
             control.Play();
  
-             
-
             return true;
 
         }
@@ -537,7 +610,6 @@ namespace videoflux.components.VideoPlayer
             }
 
             control.Pause();
-            Status = MEDIA_STATUS.PAUSED;
             return true;
 
 
@@ -550,7 +622,6 @@ namespace videoflux.components.VideoPlayer
             }
 
             control.Stop();
-            Status = MEDIA_STATUS.STOPPED;
             return true;
 
         }
@@ -594,7 +665,7 @@ namespace videoflux.components.VideoPlayer
             {
                 return false;
             } 
-            control.Time = control.Time - 350;
+            control.Time = control.Time - 2500;
             return true;
 
         }

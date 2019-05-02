@@ -77,9 +77,9 @@
 
             <Button BorderThickness="0"  Background="Transparent"  Click="viewSnapshot"  Tag="{Binding}"  Focusable="False" Cursor="Hand"    >
                 <Border  Grid.Column="0" Padding="20 20 20 0">
-                    <Border.Effect>
+                    <!--<Border.Effect>
                         <DropShadowEffect Opacity="0.5" BlurRadius="20"  />
-                    </Border.Effect>
+                    </Border.Effect>-->
 <!--
                     <TextBlock Text="{Binding Time}"></TextBlock>-->
                     <Grid>

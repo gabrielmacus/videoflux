@@ -55,7 +55,7 @@
                     </Grid>
 
                 </Button>
-                <Button  ToolTip="Marca el video como completado" Tag="{Binding}" Click="markVideoAsDone" FontSize="11" Grid.Row="1" Background="#388e3c" Foreground="White" VerticalAlignment="Center" >
+                <Button Focusable="False"  ToolTip="Marca el video como completado" Tag="{Binding}" Click="markVideoAsDone" FontSize="11" Grid.Row="1" Background="#388e3c" Foreground="White" VerticalAlignment="Center" >
                         <WrapPanel  >
                             <TextBlock FontWeight="Bold" Padding="4">Marcar</TextBlock>
                             <fa:ImageAwesome Icon="Check" Foreground="White"  Height="8" />
@@ -88,7 +88,7 @@
                         </Button.Style>
                 </Button>
 
-                <Button ToolTip="Marca el video como no completado"  Tag="{Binding}" Click="markVideoAsNotDone" FontSize="11" Grid.Row="1" Background="#c62828" Foreground="White" VerticalAlignment="Center" >
+                <Button Focusable="False" ToolTip="Marca el video como no completado"  Tag="{Binding}" Click="markVideoAsNotDone" FontSize="11" Grid.Row="1" Background="#c62828" Foreground="White" VerticalAlignment="Center" >
                         <WrapPanel  >
                             <TextBlock FontWeight="Bold" Padding="4">Desmarcar</TextBlock>
                             <fa:ImageAwesome Icon="Times" Foreground="White"  Height="8" />

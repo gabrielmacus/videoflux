@@ -141,9 +141,10 @@ namespace videoflux.pages
             };
             foreach(Video video in this.vplaylist.Playlist.Videos)
             {
+                /*
                 video.PropertyChanged += (object sender, PropertyChangedEventArgs e) => {
 
-                };
+                };*/
             }
 
             #endregion

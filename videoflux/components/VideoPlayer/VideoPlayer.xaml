@@ -153,10 +153,25 @@ MouseUp="focusOnVideo"
                     </Style>
                 </Border.Style>
             </Border>
+
+<!--
+            <Grid Background="Blue"      Grid.Row="1"  >
+                <Grid.ColumnDefinitions>
+                    
+                    <ColumnDefinition  Width="*"></ColumnDefinition>
+                    
+                </Grid.ColumnDefinitions>
+                <Border Background="Green" 
+                        HorizontalAlignment="Stretch" 
+                        VerticalAlignment="Stretch" 
+                        Grid.Column="0" 
+                        Grid.Row="0" 
+                        Grid.ColumnSpan="5" ></Border>
  
 
+            </Grid>-->
  
-            <ProgressBar Background="#bdc3c7"  BorderThickness="0" Style="{StaticResource VideoProgress}"  Value="{Binding Position}"  Grid.Row="1">
+            <ProgressBar MouseDown="seekOnProgressbar"  Background="#bdc3c7"  BorderThickness="0" Style="{StaticResource VideoProgress}"  Value="{Binding Position}"  Grid.Row="1">
             </ProgressBar> 
 
 
