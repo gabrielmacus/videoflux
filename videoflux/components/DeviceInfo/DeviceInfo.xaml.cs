@@ -77,7 +77,7 @@ namespace videoflux.components.DeviceInfo
             get { return lastVideo; }
             set { lastVideo = value; NotifyPropertyChanged("LastVideo"); }
         }
-        [field: NonSerialized]
+
         public string CurrentTime
         {
             get
@@ -93,7 +93,7 @@ namespace videoflux.components.DeviceInfo
                 DateTime currentTime = DateTime.Now;
                 var ts = currentTime.Subtract(timeStarted);
 
-                return string.Format("{0:00}:{1:00}:{2:00}", ts.Hours, ts.Minutes, ts.Seconds);
+                return string.Format("{0:00}:{1:00}:{2:00}", ts.TotalHours, ts.Minutes, ts.Seconds);
                 
 
             }
@@ -123,12 +123,17 @@ namespace videoflux.components.DeviceInfo
             }
         }
 
-        private int ExtractDeviceNumber(string folder)
+        public static int ExtractDeviceNumber(string folder)
         {
             DirectoryInfo directoryInfo = new DirectoryInfo(folder);
             string directoryName = directoryInfo.Name;
             string[] arr = directoryName.Split('_');
             var number = "";
+            if(arr.Length == 1)
+            {
+                throw new WrongFolderException();
+            }
+
             foreach (char c in arr.Last())
             {
 

@@ -20,11 +20,11 @@
                     <Style TargetType="Border">
                         <Style.Triggers >
                             <!--- DataContext.CurrentVideo.Src, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type UserControl}} -->
-                           <!-- <DataTrigger Binding="{Binding  Src}" Value="{x:Binding Src}">
+                            <DataTrigger Binding="{Binding  Active}" Value="True">
 
-                                <Setter Property="Background" Value="Red"></Setter>
-                            </DataTrigger>-->
-        
+                                <Setter Property="Background" Value="#BDBDBC"></Setter>
+                            </DataTrigger>
+
 
                         </Style.Triggers>
                     </Style>
@@ -32,10 +32,13 @@
 
                 <Grid>
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="1*"></RowDefinition> 
-                    <RowDefinition Height="auto"></RowDefinition>
+                    <RowDefinition Height="1*"></RowDefinition>
+
+                        <RowDefinition Height="auto"></RowDefinition>
+                        <RowDefinition Height="auto"></RowDefinition>
                 </Grid.RowDefinitions>
-                    <Button Grid.Row="0" Click="selectVideo"   Tag="{Binding}"  Focusable="False" Cursor="Hand" BorderThickness="0 0 1 0" BorderBrush="#bdbdbd" Width="120"  >
+                    
+                <Button Grid.Row="0" Click="selectVideo"    Tag="{Binding}"  Focusable="False" Cursor="Hand" BorderThickness="0 0 1 0" BorderBrush="#bdbdbd" Width="120"  >
                     <Grid>
 
                         <fa:ImageAwesome Icon="Spinner" Foreground="#424242" Spin="True" Height="23" >
@@ -46,16 +49,20 @@
                         </fa:ImageAwesome>
 
                         
-                        <Image  Source="{Binding ThumbnailSrc}" Stretch="UniformToFill"></Image>
-
-                            <TextBlock Text="{Binding Fines}" ToolTip="Cantidad de multas" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" Background="Black" Padding="3"></TextBlock>
+                        <Image   Source="{Binding ThumbnailSrc}" Stretch="UniformToFill"></Image>
+                      
+                        <TextBlock Text="{Binding Fines}" ToolTip="Cantidad de multas" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="White" Background="Black" Padding="3"></TextBlock>
+                        
                         <!-- 
                     <Label Background="#212121" Foreground="White"   FontSize="11" Content="{Binding ParsedDuration}" Padding="3"  HorizontalAlignment="Left" VerticalAlignment="Bottom"></Label>
 -->
                     </Grid>
 
                 </Button>
-                <Button Focusable="False"  ToolTip="Marca el video como completado" Tag="{Binding}" Click="markVideoAsDone" FontSize="11" Grid.Row="1" Background="#388e3c" Foreground="White" VerticalAlignment="Center" >
+                
+                <ProgressBar Grid.Row="1" Height="5" Value="{Binding PositionProgress}"></ProgressBar>
+
+                <Button Focusable="False"  ToolTip="Marca el video como completado" Tag="{Binding}" Click="markVideoAsDone" FontSize="11" Grid.Row="2" Background="#388e3c" Foreground="White" VerticalAlignment="Center" >
                         <WrapPanel  >
                             <TextBlock FontWeight="Bold" Padding="4">Marcar</TextBlock>
                             <fa:ImageAwesome Icon="Check" Foreground="White"  Height="8" />
@@ -88,7 +95,7 @@
                         </Button.Style>
                 </Button>
 
-                <Button Focusable="False" ToolTip="Marca el video como no completado"  Tag="{Binding}" Click="markVideoAsNotDone" FontSize="11" Grid.Row="1" Background="#c62828" Foreground="White" VerticalAlignment="Center" >
+                <Button Focusable="False" ToolTip="Marca el video como no completado"  Tag="{Binding}" Click="markVideoAsNotDone" FontSize="11" Grid.Row="2" Background="#c62828" Foreground="White" VerticalAlignment="Center" >
                         <WrapPanel  >
                             <TextBlock FontWeight="Bold" Padding="4">Desmarcar</TextBlock>
                             <fa:ImageAwesome Icon="Times" Foreground="White"  Height="8" />
@@ -147,7 +154,7 @@
 
         <Border Grid.Column="0" BorderThickness="0 0 1 0" BorderBrush="#bdbdbd"    >
 
-            <Button BorderThickness="0" Cursor="Hand" Focusable="False" Background="#eeeeee " Click="loadPlaylist">
+            <Button BorderThickness="0" ToolTip="Cargar videos desde una carpeta..." Cursor="Hand" Focusable="False" Background="#eeeeee " Click="loadPlaylist">
                 <Path Width="34.9999"     Stretch="Uniform" Fill="#f9a825 " Data="F1 M 21,30.0001L 55.9999,30.0001L 55.9999,50L 21,50L 21,30.0001 Z M 52,28L 37,28C 38,25 39.4999,24.0001 39.4999,24.0001L 50.75,24C 51.3023,24 52,24.6977 52,25.25L 52,28 Z "/>
             </Button>
 

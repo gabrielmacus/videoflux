@@ -188,7 +188,7 @@
                 <StackPanel  >
 
                     <TextBlock Text="Patente"  ></TextBlock>
-                    <TextBox Text="{Binding LicensePlate,Mode=TwoWay}" ></TextBox>
+                    <TextBox TextChanged="validateLicensePlate" Text="{Binding LicensePlate,Mode=TwoWay}" ></TextBox>
 
                     <TextBlock Text="Hora (h:m:s)"  ></TextBlock>
 
@@ -201,11 +201,11 @@
                             <ColumnDefinition Width="1*"></ColumnDefinition>
                         </Grid.ColumnDefinitions>
 
-                        <TextBox   services:SelectAllFocusBehavior.Enable="True" Grid.Column="0"  Text="{Binding H,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" ></TextBox>
+                        <TextBox Tag="H" TextChanged="validateTime"    services:SelectAllFocusBehavior.Enable="True" Grid.Column="0" Text="{Binding H,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}" ></TextBox>
                         <TextBlock   FontWeight="Bold" FontSize="12"  Text=":" Grid.Column="1" TextAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                        <TextBox  services:SelectAllFocusBehavior.Enable="True" Grid.Column="2"  Text="{Binding M,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"  ></TextBox>
+                        <TextBox  Tag="M" TextChanged="validateTime"  services:SelectAllFocusBehavior.Enable="True" Grid.Column="2"  Text="{Binding M,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"  ></TextBox>
                         <TextBlock  FontWeight="Bold" FontSize="12"  Text=":" Grid.Column="3" TextAlignment="Center" VerticalAlignment="Center"></TextBlock>
-                        <TextBox  services:SelectAllFocusBehavior.Enable="True"    Grid.Column="4"  Text="{Binding S,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"  ></TextBox>
+                        <TextBox  Tag="S" TextChanged="validateTime"   services:SelectAllFocusBehavior.Enable="True"    Grid.Column="4"  Text="{Binding S,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"  ></TextBox>
 
                     </Grid>
 

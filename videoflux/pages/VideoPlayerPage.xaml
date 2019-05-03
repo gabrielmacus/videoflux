@@ -11,6 +11,8 @@
       xmlns:VI="clr-namespace:videoflux.components.DeviceInfo"
       mc:Ignorable="d" 
       Loaded="Page_Loaded"
+      Unloaded="Page_Unloaded"
+      
       d:DesignHeight="450" d:DesignWidth="800"
       KeyDown="Page_KeyDown" 
       Title="VideoPlayerPage">

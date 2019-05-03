@@ -13,6 +13,7 @@ using videoflux.components.VideoPlayer;
 using System.Windows.Controls.Primitives;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace videoflux.components.VideoSnapshots
 {
@@ -62,24 +63,96 @@ namespace videoflux.components.VideoSnapshots
 
 
         }
+        private void validateLicensePlate(object sender, RoutedEventArgs e)
+        {
+    
+        }
+        private void validateTime(object sender,RoutedEventArgs e)
+        { 
+            var input = (TextBox)sender;
+            var tag = (string)input.Tag;
 
+            input.Text = Regex.Replace(input.Text, "[^0-9]", "");
+      
+
+
+        }
 
         private void saveSnapshotsGroup(object sender,RoutedEventArgs e)
         {
+            
+
             if (snapshotsGroup == null || snapshotsGroup.Snapshots == null || snapshotsGroup.Snapshots.Count != 3)
             {
                 MessageBox.Show("Debe realizar las 3 capturas requeridas antes de guardar", "Error al guardar", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            if (snapshotsGroup.Snapshots[2].Time >= snapshotsGroup.Snapshots[3].Time)
+
+            if (snapshotsGroup.Snapshots[2].Position >= snapshotsGroup.Snapshots[3].Position)
             {
                 MessageBox.Show("La foto 2 debe ser anterior en el video a la foto 3", "Error al guardar", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
+
+            #region Form validation
+
+
+            if (SnapshotsGroup.LicensePlate == null || SnapshotsGroup.LicensePlate.Trim() == "")
+            {
+                MessageBox.Show("Debe especificar la patente", "Error al guardar", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                return;
+            }
+
+            SnapshotsGroup.LicensePlate = Regex.Replace(SnapshotsGroup.LicensePlate, "[^A-Za-z0-9]", "");
+            bool validHour = true;
+            bool validMinutes = true;
+            bool validSeconds = true;
+
+            if (SnapshotsGroup.H > 23 || SnapshotsGroup.H < 0)
+            {
+                validHour = false;
+
+            }
+
+            if (SnapshotsGroup.M > 59 || SnapshotsGroup.M < 0)
+            {
+                validMinutes = false;
+            }
+
+            if (SnapshotsGroup.S > 59 || SnapshotsGroup.S < 0)
+            {
+                validSeconds = false;
+            }
+
+            if (!validHour)
+            {
+                MessageBox.Show("La hora debe ser un valor válido, entre 0 y 23", "Error al guardar", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+
+            if (!validMinutes)
+            {
+                MessageBox.Show("Los minutos deben ser un valor válido, entre 0 y 59", "Error al guardar", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            if (!validSeconds)
+            {
+                MessageBox.Show("Los segundos deben ser un valor válido, entre 0 y 59", "Error al guardar", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            #endregion
+
+
+
             var Handler = new Action<FFMpegException>((FFMpegException exception) => {
-                MessageBox.Show($"Error al generar el corte de video para la patente {snapshotsGroup.LicensePlate} (Tiempo de video: {snapshotsGroup.H}:{snapshotsGroup.M}:{snapshotsGroup.S}). Inténtelo nuevamente", "Error al guardar", MessageBoxButton.OK, MessageBoxImage.Error);
+                //MessageBox.Show($"Error al generar el corte de video para la patente {snapshotsGroup.LicensePlate} (Tiempo de video: {snapshotsGroup.H}:{snapshotsGroup.M}:{snapshotsGroup.S}). Inténtelo nuevamente", "Error al guardar", MessageBoxButton.OK, MessageBoxImage.Error);
+
+                MessageBox.Show($"Error al generar el corte de video para la patente {snapshotsGroup.LicensePlate} (Tiempo de video: {snapshotsGroup.H}:{snapshotsGroup.M}:{snapshotsGroup.S}). Inténtelo nuevamente. ({exception.Message} - {exception.StackTrace})", "Error al guardar", MessageBoxButton.OK, MessageBoxImage.Error);
+
                 Console.WriteLine(exception.Message);
             });
 
@@ -117,6 +190,7 @@ namespace videoflux.components.VideoSnapshots
         protected int h;
         protected int m;
         protected int s; 
+
 
         public SnapshotsGroup(int deviceNumber)
         {
@@ -235,31 +309,6 @@ namespace videoflux.components.VideoSnapshots
 
         public void Save(Action<FFMpegException> handler)
         {
-            #region Save video
-            var from = Convert.ToInt32(Math.Floor((double)Snapshots[2].Time / 1000));
-            var to = Convert.ToInt32(Math.Ceiling((double)Snapshots[3].Time / 1000));
-            var i = this.Video.Src;
-            var o = $@"{new FileInfo(this.Video.Src).Directory.FullName}\capturas\{LicensePlate}-{TimeFormatted}-{DeviceNumber}.mp4";
-            var ffMpegConverter = new FFMpegConverter();
-            var t = to - from;
-            var cmd = $"-i \"{i}\" -ss {from} -t {t} -preset ultrafast -c:v libx264  -crf 40 -an {o}";
-            
-            //Process video in background
-            var task = new Task(new Action(delegate {
-
-                try
-                {
-                    ffMpegConverter.Invoke(cmd);
-                }
-                catch (FFMpegException e)
-                {
-                    handler(e);
-                }
-
-            }));
-            task.Start();
-            #endregion
-
             #region Save Images
             var folderPath = new FileInfo(SnapshotsCollection[0].Src).Directory.FullName;
             foreach (Snapshot entry in SnapshotsCollection)
@@ -269,6 +318,7 @@ namespace videoflux.components.VideoSnapshots
                     var dest = $"{folderPath}/{LicensePlate}-{TimeFormatted}-F{entry.Number}-{DeviceNumber}.png";
                     if(dest != entry.Src)
                     {
+                        
                         /*
                         if (File.Exists(dest))
                         {
@@ -276,7 +326,7 @@ namespace videoflux.components.VideoSnapshots
                         }*/
 
                         var src = entry.Src;
-                        File.Copy(src, dest);
+                        File.Copy(src, dest,true);
                         File.SetAttributes(dest, ~FileAttributes.Hidden & ~FileAttributes.ReadOnly & ~FileAttributes.System);
 
                         ThreadPool.QueueUserWorkItem(delegate {
@@ -291,7 +341,55 @@ namespace videoflux.components.VideoSnapshots
               
             }
             #endregion
+
+
+            #region Save video
+
+            int from = 0;
+            //For solving error that shows up when i try to snapshot the first second (Gets me a very big time value)
+
+            if (Snapshots[2].Time < Snapshots[3].Time)
+            {
+               from = Convert.ToInt32(Math.Floor((double)Snapshots[2].Time / 1000));
+            }
+           
+            var to = Convert.ToInt32(Math.Ceiling((double)Snapshots[3].Time / 1000));
              
+            if(from > 1)
+            {
+                //Gets 1 second before the photo was taken, to ensure the correct visualization
+                from = from - 1;
+            }
+        
+            var i = this.Video.Src;
+            var finfo = new FileInfo(this.Video.Src);
+            var ext = finfo.Extension.Remove(0,1);
+            var o = $@"{finfo.Directory.FullName}\capturas\{LicensePlate}-{TimeFormatted}-{DeviceNumber}.{ext}";
+            var ffMpegConverter = new FFMpegConverter();
+            var t = to - from;
+            var cmd = $"-i \"{i}\" -ss {from} -t {t} -c:v copy  -an {o}";
+
+            //Process video in background
+            var task = new Task(new Action(delegate {
+
+                try
+                {
+                    if(File.Exists(o))
+                    {
+                        File.Delete(o);
+                    }
+                    ffMpegConverter.Invoke(cmd);
+                }
+                catch (FFMpegException e)
+                {
+                    handler(e);
+                }
+
+            }));
+            task.Start();
+            #endregion
+
+
             NotifyPropertyChanged("Snapshots");
             
         }
@@ -340,12 +438,13 @@ namespace videoflux.components.VideoSnapshots
     {
         protected string src;
         protected int number;
-        protected long time; 
+        protected long time;
+        protected float position;
 
-        public Snapshot(string src,int number, long time)
+        public Snapshot(string src,int number, long time, float position)
         {
             Src = src;
-             
+            Position = position;
    
             //Console.WriteLine(src);
 
@@ -372,8 +471,16 @@ namespace videoflux.components.VideoSnapshots
                 NotifyPropertyChanged("Time");
             }
         }
- 
 
+        public float Position
+        {
+            get { return position; }
+            set
+            {
+                position = value;
+                NotifyPropertyChanged("Position");
+            }
+        }
         public BitmapImage SrcBitmap
         {
             get {
@@ -400,11 +507,26 @@ namespace videoflux.components.VideoSnapshots
         public string TimeFormatted
         {
             get {
+                 
 
                 var t = Math.Round((double)Time);
+                 
                 if (t < 0) { t = 0; }
-                var dateTime = new DateTime(TimeSpan.FromMilliseconds(t).Ticks);
-                return dateTime.ToString("HH:mm:ss"); 
+
+                //TODO: Review
+                try
+                {
+                    var dateTime = new DateTime(TimeSpan.FromMilliseconds(t).Ticks);
+                    return dateTime.ToString("HH:mm:ss");
+                }
+                catch (OverflowException e)
+                {
+                    return "00:00:00";
+
+                }
+
+
+             
                     
             }
         }

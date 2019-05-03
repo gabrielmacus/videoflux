@@ -76,7 +76,13 @@ namespace videoflux.pages
 
             if(!unsavedChanges || MessageBox.Show("¿Seguro que desea cambiar de video? Tiene cambios sin guardar","Atención", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
             {
-                this.vplayer.Video = (Video)e.Source;
+                if(this.vplayer.Video != null)
+                {
+                    this.vplayer.Video.Dispose();
+                }
+                 
+                this.vplayer.Video = (Video)e.Source; 
+
                 this.vsnapshots.SnapshotsGroup.Dispose();
                 this.vsnapshots.SnapshotsGroup.Video = this.vplayer.Video;
                 this.vinfo.Info.LastVideo = this.vplayer.Video;
@@ -90,7 +96,7 @@ namespace videoflux.pages
             this.vplayer.Video.Fines = this.vplayer.Video.Fines + 1;
             this.vsnapshots.SnapshotsGroup.Dispose();
             this.vsnapshots.SnapshotsGroup.Video = this.vplayer.Video;
-
+            this.vplayer.Focus();
         }
 
         public void onSnapshotTaken(object sender,RoutedEventArgs e,Snapshot snapshot)
@@ -124,60 +130,131 @@ namespace videoflux.pages
         public void onLoadedPlaylist(object sender, RoutedEventArgs e)
         {
             Info info = new Info((string)e.Source); 
-            this.vinfo.Info = info;
+            this.vinfo.Info = info; 
+            this.vsnapshots.SnapshotsGroup = new SnapshotsGroup(info.DeviceNumber);
+            LoadState(sender,e);
+             
+        }
+        #region Save state
+        string stateFileName = "state.dat";
+        Dictionary<string, object> stateData = new Dictionary<string, object>();
 
-            #region Save state
-            info.PropertyChanged += delegate
-             {
-                //Console.WriteLine("Info changed");
-
-                 //SaveState(info);
-             };
-            this.vplaylist.Playlist.PropertyChanged += delegate {
-
-                Console.WriteLine("Playlist changed");
-                //SaveState(this.vplaylist.Playlist);
-
-            };
-            foreach(Video video in this.vplaylist.Playlist.Videos)
+        private void LoadState(object sender, RoutedEventArgs e)
+        {
+            try
             {
-                /*
-                video.PropertyChanged += (object sender, PropertyChangedEventArgs e) => {
+                if (this.vplaylist.Playlist != null && this.vplaylist.Playlist.HasVideos)
+                {
+                    var finfo = new FileInfo(this.vplaylist.Playlist.Videos[0].Src);
+                    var statePath = System.IO.Path.Combine(finfo.Directory.FullName, stateFileName);
+                    if (File.Exists(statePath))
+                    {
+                        FileStream fs = new FileStream(statePath, FileMode.Open);
+                        IFormatter formatter = new BinaryFormatter();
+                        stateData = (Dictionary<string, object>)formatter.Deserialize(fs);
 
-                };*/
+                        ProcessSerializedData(stateData,sender,e);
+
+                        fs.Close();
+                        fs.Dispose();
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                Console.WriteLine(ex.StackTrace);
+            }
+          
+        }
+        private void ProcessSerializedData(Dictionary<string, object> stateData,object sender, RoutedEventArgs e)
+        {
+            var playlist = (Playlist)stateData["playlist"];
+            foreach(Video v1 in vplaylist.Playlist.Videos)
+            {
+                foreach(Video v2 in playlist.Videos)
+                {
+                    if(v1.Src == v2.Src)
+                    { 
+                        v1.Fines = v2.Fines;
+                        v1.VideoStatus = v2.VideoStatus;
+                        v1.Active = v2.Active; 
+                        v1.StartPosition = v2.StartPosition; 
+ 
+                        
+                        if(v1.Active)
+                        {
+                            e.Source = v1; 
+                            onSelectedVideo(sender,e);
+                            //v1.Play();
+                        }
+                      
+
+                    }
+                }
             }
 
-            #endregion
-
-            this.vsnapshots.SnapshotsGroup = new SnapshotsGroup(info.DeviceNumber);
-
- 
         }
-
-
-        private void SaveState(Object obj)
+        private void SaveState(object sender, RoutedEventArgs e,bool fromTimer = false)
         {
-            IFormatter formatter = new BinaryFormatter();
-            Stream stream = new FileStream(@"I:\2019-02-16_4(DALILA)\demo.dat", FileMode.Create,FileAccess.Write);
-            formatter.Serialize(stream, obj);
-            stream.Close();
+            if (this.vplaylist.Playlist != null && this.vplaylist.Playlist.HasVideos)
+            {
+                
+                var finfo = new FileInfo(this.vplaylist.Playlist.Videos[0].Src);
+                var statePath = System.IO.Path.Combine(finfo.Directory.FullName, stateFileName);
+                
+                if(!fromTimer)
+                {
+                    //Saves start point for next load
+                    foreach (Video v in this.vplaylist.Playlist.Videos)
+                    {
+                        if (v.Active)
+                        {
+                            v.StartPosition = v.PositionProgress;
+                        }
+                    }
+                }
+            
 
+                stateData["playlist"] = this.vplaylist.Playlist;  
+                IFormatter formatter = new BinaryFormatter();
+                Stream stream = new FileStream(statePath, FileMode.Create, FileAccess.Write);
+                formatter.Serialize(stream, stateData);
+                stream.Close();
+            }
+               
         }
-
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-             
+            var window = Window.GetWindow(this);
+           
+            window.Closed += delegate {
+                SaveState(sender, e);
+            };
 
-            /*
-            Snapshot snapshot = new Snapshot(@"C:\Users\Gabriel\Pictures\Demo\highway-cars-wallpaper-1.jpg", 1,10000);
-            Crop Crop = new Crop(snapshot);
-            this.vcropper.Crop = Crop;*/
+            var t = new System.Timers.Timer(15000);
+            t.AutoReset = true;
+            t.Enabled = true;
+            t.Elapsed += delegate
+            {
+                SaveState(sender, e,true);
+            };
+            t.Start();
+        
+
         }
+
+        #endregion
+
 
         private void Page_KeyDown(object sender, KeyEventArgs e)
         {
             //Console.WriteLine(e.Key);
         }
+
+        private void Page_Unloaded(object sender, RoutedEventArgs e)
+        {
+         }
     }
 
 }

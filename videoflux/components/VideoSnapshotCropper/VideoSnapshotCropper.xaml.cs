@@ -33,7 +33,7 @@ namespace videoflux.components.VideoSnapshotCropper
         {
             InitializeComponent();
 
-           
+            this.DataContext = null;
         }
 
         public Crop Crop
@@ -47,7 +47,12 @@ namespace videoflux.components.VideoSnapshotCropper
                 this.DataContext = value;
 
             }
-            get { return (Crop)this.DataContext;  }
+            get {
+                 
+
+                return (this.DataContext == null)? null:(Crop)this.DataContext;
+
+            }
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
@@ -177,6 +182,10 @@ namespace videoflux.components.VideoSnapshotCropper
 
         private void MainWindow_MouseWheel(object sender, MouseWheelEventArgs e)
         {
+            if(Crop == null)
+            {
+                return;
+            }
             Point p = e.MouseDevice.GetPosition(image);
 
             Matrix m = image.RenderTransform.Value;
@@ -188,6 +197,7 @@ namespace videoflux.components.VideoSnapshotCropper
             image.RenderTransform = new MatrixTransform(m);
 
             Crop.Src = GenerateCrop();
+
         }
 
         private CroppedBitmap GenerateCrop()

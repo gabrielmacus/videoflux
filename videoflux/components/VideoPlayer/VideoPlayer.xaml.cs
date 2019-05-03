@@ -105,17 +105,36 @@ namespace videoflux.components.VideoPlayer
 
         }
 
-         
+        double doublePbarPositionStart = 0;
+        bool pbarSliding = false;
+        public void progressbarSlideEnd(object sender, MouseEventArgs e)
+        {
+            pbarSliding = false;
+        }
+        public void progresssbarSliding(object sender,MouseEventArgs e)
+        {
+            if(pbarSliding)
+            {
+                var pbar = (ProgressBar)sender;
+                doublePbarPositionStart = e.GetPosition(pbar).X;
+
+                var percent = (doublePbarPositionStart * 100) / pbar.ActualWidth;
+                percent = percent > 100 ? 100 : percent;
+
+                Video.Play();
+
+
+                pbar.Value = percent;
+                Video.Position = (float)percent;
+            }
+       
+
+        }
         public void seekOnProgressbar(object sender, MouseEventArgs e)
         {
-            var pbar = (ProgressBar)sender;
-            var percent = (e.GetPosition(pbar).X * 100) / pbar.ActualWidth;
-            percent = percent > 100 ? 100 : percent;
-
-            Video.Play();
-            pbar.Value = percent;
-           
-            //Video.Position = (float)percent;
+            pbarSliding = true;
+            progresssbarSliding(sender, e);
+             
         }
 
         public void UserControlLoaded(object sender, RoutedEventArgs e)
@@ -132,18 +151,9 @@ namespace videoflux.components.VideoPlayer
             
             this.videoVlc.Child = videoVlc;
              
-
-            //var window = Window.GetWindow(this);
-            //window.KeyDown += onKeyDown;
-
-            //this.Focusable = true;
+             
             this.Focus();
-            this.KeyDown += onKeyDown;
-            /*
-            Keyboard.Focus(this);
-            EventManager.RegisterClassHandler(typeof(Window),
-            Keyboard.KeyDownEvent, new KeyEventHandler(onKeyDown), true);*/
-
+            this.KeyDown += onKeyDown; 
 
         }
        
@@ -190,21 +200,21 @@ namespace videoflux.components.VideoPlayer
                     e.Handled = true;
                     break;
                 case Key.Right:
-
+          
+                   
                     new Thread(new ThreadStart(delegate {
+
 
                         if (Video.Status == MEDIA_STATUS.PAUSED /*(e.KeyboardDevice.Modifiers & ModifierKeys.Control) == ModifierKeys.Control*/)
                         {
                             nextFrame(sender, e);
-
                         }
                         else
                         {
 
                             fastForward(sender, e);
-                            //   Thread.Sleep(100);
+                            Thread.Sleep(250);
                         }
-
 
                     })).Start();
 
@@ -214,26 +224,24 @@ namespace videoflux.components.VideoPlayer
                     break;
 
                 case Key.Left:
-
+                     
+                    
                     new Thread(new ThreadStart(delegate
                     {
 
                         if (Video.Status == MEDIA_STATUS.PAUSED /*(e.KeyboardDevice.Modifiers & ModifierKeys.Control) == ModifierKeys.Control*/)
                         {
-
-
                             prevFrame(sender, e);
-                             
                         }
                         else
                         {
                             rewind(sender, e);
-                            //   Thread.Sleep(100);
+                            Thread.Sleep(250);
                         }
 
                     })).Start();
+                    
 
-                 
                     e.Handled = true;
 
                     break;
@@ -335,7 +343,7 @@ namespace videoflux.components.VideoPlayer
     public enum VIDEO_STATUS : int { NOT_DONE = 2, DONE = 1};
 
     [Serializable]
-    public class Video : INotifyPropertyChanged
+    public class Video : INotifyPropertyChanged,IDisposable
     {
 
         protected int fines = 0;
@@ -345,10 +353,13 @@ namespace videoflux.components.VideoPlayer
         protected string src;
         protected long duration = -1;
         protected float position = 0;
-        protected uint speed = 1; 
+        protected float startPosition = 0;
+        protected uint speed = 1;
+        [field: NonSerialized]
         protected Vlc.DotNet.Forms.VlcControl control;
         protected uint maxSpeed = 5;
         protected VIDEO_STATUS videoStatus = VIDEO_STATUS.NOT_DONE;
+        protected bool active = false;
 
         #region Constructors
 
@@ -360,15 +371,55 @@ namespace videoflux.components.VideoPlayer
         #endregion
 
         #region Setters/Getters
+        public float PositionProgress
+        {
+            set
+            {
+                 
+            }
+            get
+            { 
+
+                if (StartPosition > 0)
+                {
+                    return StartPosition;
+                }
+                else
+                {
+                    return Position;
+                }
+            }
+        }
+
+        public bool Active
+        {
+            get { return active;  }
+            set
+            {
+                active = value;
+
+               
+                NotifyPropertyChanged("Active");
+            }
+        }
 
         public float Position
         {
             get { return position * 100; }
             set
             {
-                this.Control.Position = (value > 0)?value / 100: value;
+                this.Control.Position = (value > 0) ? value / 100 : value;
             }
 
+        }
+        public float StartPosition
+        {
+            get { return startPosition;  }
+            set
+            {
+                startPosition = value; 
+                NotifyPropertyChanged("StartPosition");
+            }
         }
 
         public int Fines
@@ -405,71 +456,23 @@ namespace videoflux.components.VideoPlayer
             }
         }
 
+      
         public Vlc.DotNet.Forms.VlcControl Control
         {
             set
             {
-                control = value; 
+                control = value;
+                SuscribeEvents();
 
-                if(Src != null)
+                if (Src != null)
                 {
-                control.SetMedia(new Uri(src)); 
+
+                    control.SetMedia(new Uri(src)); 
                 } 
-                control.LengthChanged += delegate
-                {
-                      duration = control.Length;
-
-                };
-                control.PositionChanged += delegate
-                { 
-                    position = this.Control.Position;
-                    NotifyPropertyChanged("Position");
-                };
-                control.Paused += delegate
-                {
-                    Status = MEDIA_STATUS.PAUSED;
-                };
-                control.Stopped += delegate
-                {
-                    Status = MEDIA_STATUS.STOPPED;
-                }; 
-                control.Playing += delegate
-                {
-                    Status = MEDIA_STATUS.PLAYING;
-                };
-   
-                control.EndReached += delegate
-                {
-
-                    ThreadPool.QueueUserWorkItem(delegate {
-
-                        control.ResetMedia();
-                        Src = src;
-
-
-                    });
-
-
-                    Console.WriteLine("END");
-                   
-              
-                    //control.Stop();
-                    //control.Stop();
-                    //control.ResetMedia();
-                };
-                control.MediaChanged += delegate
-                {
-                    if (!IsMediaPresent)
-                    {
-
-                        Status = MEDIA_STATUS.NO_MEDIA;
-                    }
-                };
-
-
             }
             get { return control; }
         }
+
 
         public long Duration
         {
@@ -478,7 +481,14 @@ namespace videoflux.components.VideoPlayer
 
         public long Time
         {
-            get { return (IsMediaPresent) ? Control.Length : -1; }
+            get {
+                if (Control != null)
+                {
+                    return Control.Time;//Control.Length;
+                }
+                else
+                { return -1; }
+            }
         }
 
         public string Name
@@ -520,6 +530,7 @@ namespace videoflux.components.VideoPlayer
 
         }
 
+        
         public BitmapImage ThumbnailSrc
         {
             get
@@ -573,11 +584,133 @@ namespace videoflux.components.VideoPlayer
                 NotifyPropertyChanged("Status");
             }
         }
+
+        public string TimeRemaining
+        {
+            get
+            {
+                var t = (Time == -1) ? 0 : Time;
+                var d = Duration == -1 ? 0 : Duration; 
+                var ts = TimeSpan.FromMilliseconds(d - t);
+                return string.Format("{0:00}:{1:00}:{2:00}", ts.Hours, ts.Minutes, ts.Seconds);
+
+
+            }
+        }
+
+        public string TimeElapsed
+        {
+            get
+            {
+                var t = (Time == -1)?0:Time; 
+                var ts = TimeSpan.FromMilliseconds(t);  
+                return string.Format("{0:00}:{1:00}:{2:00}",ts.Hours,ts.Minutes, ts.Seconds);
+
+
+            }
+        }
+
         #endregion
+
+
+        #region Event handlers
+        private void Control_MediaChanged(object sender, Vlc.DotNet.Core.VlcMediaPlayerMediaChangedEventArgs e)
+        { 
+            if (Src == null)
+            {
+
+                Status = MEDIA_STATUS.NO_MEDIA;
+            }
+            else
+            {
+             
+                Status = MEDIA_STATUS.STOPPED;
+            }
+        
+        }
+        private void Control_EndReached(object sender, Vlc.DotNet.Core.VlcMediaPlayerEndReachedEventArgs e)
+        {
+            Task.Factory.StartNew(delegate {
+                control.ResetMedia();
+                Src = src;
+
+            });
+        }
+        private void Control_TimeChanged(object sender, Vlc.DotNet.Core.VlcMediaPlayerTimeChangedEventArgs e)
+        {
+            NotifyPropertyChanged("Time");
+            NotifyPropertyChanged("TimeElapsed");
+            NotifyPropertyChanged("TimeRemaining"); 
+
+
+        }
+
+        private void Control_LengthChanged(object sender, Vlc.DotNet.Core.VlcMediaPlayerLengthChangedEventArgs e)
+        {
+            duration = control.Length;
+
+            if (StartPosition > 0)
+            {
+                Console.WriteLine("Start position overwrite");
+                Position = StartPosition;
+                StartPosition = 0;
+            }
+        }
+        private void Control_PositionChanged(object sender, Vlc.DotNet.Core.VlcMediaPlayerPositionChangedEventArgs e)
+        {
+            position = this.Control.Position;
+            NotifyPropertyChanged("Position");
+            NotifyPropertyChanged("PositionProgress"); 
+
+        }
+        private void Control_Playing(object sender, Vlc.DotNet.Core.VlcMediaPlayerPlayingEventArgs e)
+        {
+            Status = MEDIA_STATUS.PLAYING;
+          
+          
+        }
+        private void Control_Paused(object sender, Vlc.DotNet.Core.VlcMediaPlayerPausedEventArgs e)
+        {
+            Status = MEDIA_STATUS.PAUSED;
+        }
+        private void Control_Stopped(object sender, Vlc.DotNet.Core.VlcMediaPlayerStoppedEventArgs e)
+        {
+            Status = MEDIA_STATUS.STOPPED;
+        }
+        #endregion
+
 
         #region Actions
 
-            
+        private void UnsuscribeEvents()
+        {
+            if (IsMediaPresent)
+            { 
+                control.LengthChanged -= Control_LengthChanged;
+                control.PositionChanged -= Control_PositionChanged;
+                control.Paused -= Control_Paused;
+                control.Stopped -= Control_Stopped;
+                control.Playing -= Control_Playing;
+                control.TimeChanged -= Control_TimeChanged;
+                control.EndReached -= Control_EndReached;
+                control.MediaChanged -= Control_MediaChanged;
+
+            }
+        }
+        private void SuscribeEvents()
+        {
+            if (Control != null)
+            { 
+                control.LengthChanged += Control_LengthChanged;
+                control.PositionChanged += Control_PositionChanged;
+                control.Paused += Control_Paused;
+                control.Stopped += Control_Stopped;
+                control.Playing += Control_Playing;
+                control.TimeChanged += Control_TimeChanged;
+                control.EndReached += Control_EndReached;
+                control.MediaChanged += Control_MediaChanged;
+            }
+        }
         public bool IsMediaPresent
         {
             get
@@ -637,6 +770,8 @@ namespace videoflux.components.VideoPlayer
 
         }
 
+
+
         public bool Rewind(uint seconds)
         {
             if (!IsMediaPresent /*|| control.Time < (seconds * 1000)*/)
@@ -656,7 +791,11 @@ namespace videoflux.components.VideoPlayer
                 return false;
             }
             control.VlcMediaPlayer.NextFrame();
-            //control.Time = control.Time + 350;
+             
+            
+            NotifyPropertyChanged("TimeElapsed");
+            NotifyPropertyChanged("TimeRemaining");
+            
             return true;
         }
         public bool PrevFrame()
@@ -685,8 +824,12 @@ namespace videoflux.components.VideoPlayer
                  
                 if(control.TakeSnapshot(path, 0, 0) && File.Exists(path))
                 {
+                    var time = (control.Time >= 0) ? control.Time : 0;
+                 
+
                     File.SetAttributes(path, FileAttributes.Hidden);
-                    Snapshot snapshot = new Snapshot(path, number, control.Time);
+                    Snapshot snapshot = new Snapshot(path, number,time,control.Position);
+              
                     return snapshot;
                 }
               
@@ -726,6 +869,16 @@ namespace videoflux.components.VideoPlayer
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        public void Dispose()
+        {
+            
+            UnsuscribeEvents();
+            if (IsMediaPresent)
+            {
+                control.ResetMedia();
             }
         }
 

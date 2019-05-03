@@ -9,6 +9,7 @@ using videoflux.components.VideoPlayer;
 using MessageBox = System.Windows.Forms.MessageBox;
 using Button = System.Windows.Controls.Button;
 using System.Collections.ObjectModel;
+using videoflux.components.DeviceInfo;
 
 namespace videoflux.components.VideoPlaylist
 {
@@ -88,9 +89,21 @@ namespace videoflux.components.VideoPlaylist
         public void selectVideo(object sender, RoutedEventArgs e)
         {
             var button =(Button)sender;
-            playlist.CurrentVideo = ((Video)button.Tag);
+            var video = ((Video)button.Tag);
 
-            e.Source = playlist.CurrentVideo;
+            foreach(Video v in Playlist.Videos)
+            {
+                if(v.Active)
+                {
+                    //Saves last position to be resumed from there
+                    v.StartPosition = v.PositionProgress; 
+                }  
+
+                v.Active = false;
+            }
+
+            video.Active = true;
+            e.Source =  video; 
             SelectedVideo.Invoke(sender,e);
 
         }
@@ -103,7 +116,7 @@ namespace videoflux.components.VideoPlaylist
             {
                 if(!playlist.loadFromFolder(dialog.SelectedPath))
                 {
-                    MessageBox.Show("No se encontraron videos compatibles");
+                    MessageBox.Show("El nombre de la carpeta es inválido o no se encontraron videos compatibles","Error al carga videos",MessageBoxButtons.OK,MessageBoxIcon.Error);
                 }
                 else
                 {
@@ -128,12 +141,12 @@ namespace videoflux.components.VideoPlaylist
     }
 
 
-
+    [Serializable]
     public class Playlist : INotifyPropertyChanged
     {
 
         ObservableCollection<Video> videos = new ObservableCollection<Video>();
-        protected Video currentVideo;
+
 
         public static string[] allowedExtensions = { ".mp4",".avi" };
 
@@ -146,17 +159,7 @@ namespace videoflux.components.VideoPlaylist
             get { return videos.Count > 0; }
         }
  
-        
-        public Video CurrentVideo
-        {
-            get { return currentVideo; }
-            set {
-                currentVideo = value;
-                NotifyPropertyChanged("CurrentVideo");
-
-            }
-        }
-
+   
 
         public ObservableCollection<Video> Videos
         {
@@ -181,6 +184,18 @@ namespace videoflux.components.VideoPlaylist
 
         public bool loadFromFolder(string path)
         {
+
+            try
+            {
+
+                Info.ExtractDeviceNumber(path);
+            }
+            catch(WrongFolderException e)
+            {
+                return false;
+            }
+
+
             ObservableCollection<Video> videos = new ObservableCollection<Video>();
 
             DirectoryInfo directoryInfo = new DirectoryInfo(path);

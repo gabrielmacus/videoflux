@@ -10,6 +10,7 @@ namespace videofluxTest
         [TestMethod]
         public void TestExtractDeviceNumber()
         {
+
             var deviceInfo = new Info(@"I:\2019-02-16_4");
             Assert.AreEqual(4,deviceInfo.DeviceNumber);
 
@@ -34,6 +35,10 @@ namespace videofluxTest
 
             Assert.ThrowsException<WrongFolderException>(() => {
                 deviceInfo = new Info(@"I:\2019-02-16_A");
+            });
+
+            Assert.ThrowsException<WrongFolderException>(() => {
+                deviceInfo = new Info(@"I:\2019-02-16-4");
             });
 
         }

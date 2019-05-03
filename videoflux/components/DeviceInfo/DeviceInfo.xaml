@@ -65,7 +65,7 @@
                 </TextBlock.Style>
 
                 <TextBlock.Text>
-                    <MultiBinding StringFormat="{} Nro. de equipo: {0} | Hora actual: {1} | Multas realizadas: {2} | Tiempo transcurrido: {3}">
+                    <MultiBinding StringFormat="{} Nro. de equipo: {0} | Hora actual: {1} | Multas de la sesión: {2} | Tiempo de la sesión: {3}">
                         <Binding Path="DeviceNumber" />
                         <Binding Path="CurrentTime" />
                         <Binding Path="TotalFines" />
