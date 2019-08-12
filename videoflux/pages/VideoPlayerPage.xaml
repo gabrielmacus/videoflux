@@ -47,9 +47,8 @@
 
 
         <VL:VideoPlaylist x:Name="vplaylist" LoadedPlaylist="onLoadedPlaylist" SelectedVideo="onSelectedVideo" Grid.Column="0" Grid.ColumnSpan="9" Grid.Row="0" />
- 
+
         <VP:VideoPlayer  SnapshotTaken="onSnapshotTaken"  x:Name="vplayer"  Grid.Column="0" Grid.ColumnSpan="9"  Grid.Row="1"  >
-     
         </VP:VideoPlayer>
 
 

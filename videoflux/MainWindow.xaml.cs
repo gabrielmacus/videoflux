@@ -28,7 +28,7 @@ namespace videoflux
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            this.Title = Properties.Resources.AppName + " 1.0.0.9";
+            this.Title = Properties.Resources.AppName + " " + Properties.Resources.AppVersion;
 
         }
     }

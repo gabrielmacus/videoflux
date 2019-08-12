@@ -10,6 +10,7 @@ using MessageBox = System.Windows.Forms.MessageBox;
 using Button = System.Windows.Controls.Button;
 using System.Collections.ObjectModel;
 using videoflux.components.DeviceInfo;
+using System.Text.RegularExpressions;
 
 namespace videoflux.components.VideoPlaylist
 {
@@ -200,17 +201,44 @@ namespace videoflux.components.VideoPlaylist
 
             DirectoryInfo directoryInfo = new DirectoryInfo(path);
             FileInfo[] files = directoryInfo.GetFiles();
+            Regex two_cameras_filename_regex = new Regex(@"([0-9\sa-z]{1,})_(?<camera>[1-2]{1})__[0-9]{1,2}_[0-9]{1,2}_[0-9]{1,4}_[0-9]{1,2}_[0-9]{1,2}_[0-9]{1,2}.mp4");
 
             foreach (FileInfo file in files)
             {
                 if (Array.Exists(allowedExtensions, element => element == file.Extension))
                 {
-                    Video video = new Video();
-                    video.Src = file.FullName;
-                    video.Name = file.Name;
-                    videos.Add(video);
-                    
+                    Match match = two_cameras_filename_regex.Match(file.Name);
+                    Video secondary_video = null;
+                    if ( match.Success && match.Groups["camera"].Value == "1")
+                    {
+                        string secondary_camera_file = Regex.Replace(file.FullName, "_([1-2]{1})__", "_2__");
+                        if (File.Exists(secondary_camera_file))
+                        {
+                            var secondary_file = new FileInfo(secondary_camera_file);
+                            secondary_video = new Video();
+                            secondary_video.Src = secondary_file.FullName;
+                            secondary_video.Name = secondary_file.Name;
+
+                            Video video = new Video();
+                            video.Src = file.FullName;
+                            video.Name = file.Name;
+                            video.RelatedVideo = secondary_video;
+                            videos.Add(video);
+                        }
+
+
+                    }
+                    else if (!match.Success)
+                    {
+                        Video video = new Video();
+                        video.Src = file.FullName;
+                        video.Name = file.Name;
+                        video.RelatedVideo = secondary_video;
+                        videos.Add(video);
+                    }
+    
                 }
+
             }
 
 

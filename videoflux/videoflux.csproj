@@ -18,7 +18,7 @@
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>C:\Users\Gabriel\Documents\Proyectos\Videoflux\publish\x64\</PublishUrl>
+    <PublishUrl>C:\Users\Gabriel\Documents\Proyectos\Videoflux\publish\Videoflux_x86_net\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
@@ -29,9 +29,9 @@
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
     <UpdateUrl>http://31.220.63.108/videoflux-x86/</UpdateUrl>
-    <MinimumRequiredVersion>1.0.0.9</MinimumRequiredVersion>
-    <ApplicationRevision>9</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <MinimumRequiredVersion>1.2.0.0</MinimumRequiredVersion>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.2.0.0</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -280,7 +280,5 @@
       <ErrorText>Este proyecto hace referencia a los paquetes NuGet que faltan en este equipo. Use la restauración de paquetes NuGet para descargarlos. Para obtener más información, consulte http://go.microsoft.com/fwlink/?LinkID=322105. El archivo que falta es {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\VideoLAN.LibVLC.Windows.3.0.6\build\VideoLAN.LibVLC.Windows.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\VideoLAN.LibVLC.Windows.3.0.6\build\VideoLAN.LibVLC.Windows.targets'))" />
-    <Error Condition="!Exists('..\packages\EMGU.CV.4.0.1.3373\build\EMGU.CV.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\EMGU.CV.4.0.1.3373\build\EMGU.CV.targets'))" />
   </Target>
-  <Import Project="..\packages\EMGU.CV.4.0.1.3373\build\EMGU.CV.targets" Condition="Exists('..\packages\EMGU.CV.4.0.1.3373\build\EMGU.CV.targets')" />
 </Project>

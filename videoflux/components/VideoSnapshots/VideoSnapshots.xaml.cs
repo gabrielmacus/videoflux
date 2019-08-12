@@ -344,7 +344,7 @@ namespace videoflux.components.VideoSnapshots
 
 
             #region Save video
-
+            /*
             int from = 0;
             //For solving error that shows up when i try to snapshot the first second (Gets me a very big time value)
 
@@ -355,10 +355,10 @@ namespace videoflux.components.VideoSnapshots
            
             var to = Convert.ToInt32(Math.Ceiling((double)Snapshots[3].Time / 1000));
              
-            if(from > 1)
+            if(from > 2)
             {
-                //Gets 1 second before the photo was taken, to ensure the correct visualization
-                from = from - 1;
+                //Gets 2 second before the photo was taken, to ensure the correct visualization
+                from = from - 2;
             }
         
             var i = this.Video.Src;
@@ -387,6 +387,7 @@ namespace videoflux.components.VideoSnapshots
 
             }));
             task.Start();
+            */
             #endregion
 
 

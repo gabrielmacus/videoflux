@@ -6,7 +6,8 @@
         xmlns:local="clr-namespace:videoflux" 
         mc:Ignorable="d"
         Loaded="Window_Loaded"
-        Height="627" Width="1023.834">
+        WindowState="Maximized"
+        >
 
  
     

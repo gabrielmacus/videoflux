@@ -68,5 +68,14 @@ namespace videoflux.Properties {
                 return ResourceManager.GetString("AppName", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Busca una cadena traducida similar a 1.2.0.
+        /// </summary>
+        internal static string AppVersion {
+            get {
+                return ResourceManager.GetString("AppVersion", resourceCulture);
+            }
+        }
     }
 }

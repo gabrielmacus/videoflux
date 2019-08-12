@@ -18,12 +18,9 @@ namespace videoflux
         [STAThread]
         public static void Main()
         {
-            
 
             var application = new App();
             application.InitializeComponent();
-
-
             application.Run();
 
         }

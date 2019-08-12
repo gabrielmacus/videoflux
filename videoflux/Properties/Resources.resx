@@ -120,4 +120,7 @@
   <data name="AppName" xml:space="preserve">
     <value>Videoflux</value>
   </data>
+  <data name="AppVersion" xml:space="preserve">
+    <value>1.2.0</value>
+  </data>
 </root>
