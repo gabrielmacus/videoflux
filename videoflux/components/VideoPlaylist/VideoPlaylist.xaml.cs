@@ -197,12 +197,73 @@ namespace videoflux.components.VideoPlaylist
             }
 
 
+
             ObservableCollection<Video> videos = new ObservableCollection<Video>();
 
             DirectoryInfo directoryInfo = new DirectoryInfo(path);
             FileInfo[] files = directoryInfo.GetFiles();
-            Regex two_cameras_filename_regex = new Regex(@"([0-9\sa-z]{1,})_(?<camera>[1-2]{1})__[0-9]{1,2}_[0-9]{1,2}_[0-9]{1,4}_[0-9]{1,2}_[0-9]{1,2}_[0-9]{1,2}.mp4");
+           
+            Regex two_cameras_filename_regex_1 = new Regex(@"(?<camera>[1-2]{1})__[0-9]{1,4}-[0-9]{1,2}-[0-9]{1,2}_[0-9]{1,2}-[0-9]{1,2}-[0-9]{1,2}.mp4");
+            Regex two_cameras_filename_regex_2 = new Regex(@"([0-9\sa-z]{1,})_(?<camera>[1-2]{1})__[0-9]{1,2}_[0-9]{1,2}_[0-9]{1,4}_[0-9]{1,2}_[0-9]{1,2}_[0-9]{1,2}.mp4");
 
+            foreach (FileInfo file in files)
+            {
+                if (Array.Exists(allowedExtensions, element => element == file.Extension))
+                {
+                    Match match_1 = two_cameras_filename_regex_1.Match(file.Name);
+                    Match match_2 = two_cameras_filename_regex_2.Match(file.Name);
+
+                    Video secondary_video = null;
+                    if ((match_1.Success && match_1.Groups["camera"].Value == "1") 
+                        || (match_2.Success && match_2.Groups["camera"].Value == "1"))
+                    {
+
+                        string secondary_camera_file = match_1.Success 
+                            ? Regex.Replace(file.FullName, "([1-2]{1})__", "2__") : 
+                            Regex.Replace(file.FullName, "_([1-2]{1})__", "_2__");
+
+                        //string secondary_camera_file = Regex.Replace(file.FullName, "_([1-2]{1})__", "_2__");
+
+                        if (File.Exists(secondary_camera_file))
+                        {
+                            secondary_video = new Video();
+                            secondary_video.Src = file.FullName;
+                            secondary_video.Name = file.Name;
+
+                            var secondary_file = new FileInfo(secondary_camera_file);
+                            Video video = new Video();
+                            video.Src = secondary_file.FullName;
+                            video.Name = secondary_file.Name;
+                            video.RelatedVideo = secondary_video;
+                            videos.Add(video);
+                        }
+
+
+                    }
+                    else if (!match_1.Success && !match_2.Success)
+                    {
+                        Video video = new Video();
+                        video.Src = file.FullName;
+                        video.Name = file.Name;
+                        videos.Add(video);
+                    }
+
+                }
+
+            }
+
+            /*
+            foreach (FileInfo file in files)
+            {
+                var split = file.Name.Split('_');
+                var date = file.Name.Split(new[] { "__" }, StringSplitOptions.None)[1].TrimEnd(new[] { '.','m','p','4' }).Split('_');
+                var newName = split[1]+"__"+date[2]+"-"+date[1]+"-"+date[0]+"_"+date[3]+"-"+date[4]+"-"+date[5]+".mp4";
+                //File.Move(file.FullName, newName);
+                Console.WriteLine(file.FullName);
+                Console.WriteLine(newName);
+            }*/
+
+            /*
             foreach (FileInfo file in files)
             {
                 if (Array.Exists(allowedExtensions, element => element == file.Extension))
@@ -214,14 +275,15 @@ namespace videoflux.components.VideoPlaylist
                         string secondary_camera_file = Regex.Replace(file.FullName, "_([1-2]{1})__", "_2__");
                         if (File.Exists(secondary_camera_file))
                         {
-                            var secondary_file = new FileInfo(secondary_camera_file);
+                           
                             secondary_video = new Video();
-                            secondary_video.Src = secondary_file.FullName;
-                            secondary_video.Name = secondary_file.Name;
+                            secondary_video.Src = file.FullName;
+                            secondary_video.Name = file.Name;
 
+                            var secondary_file = new FileInfo(secondary_camera_file);
                             Video video = new Video();
-                            video.Src = file.FullName;
-                            video.Name = file.Name;
+                            video.Src = secondary_file.FullName;
+                            video.Name = secondary_file.Name;
                             video.RelatedVideo = secondary_video;
                             videos.Add(video);
                         }
@@ -240,6 +302,7 @@ namespace videoflux.components.VideoPlaylist
                 }
 
             }
+            */
 
 
             this.Videos = videos;

@@ -7,6 +7,7 @@
              xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms" 
              xmlns:vlc="clr-namespace:Vlc.DotNet.Forms;assembly=Vlc.DotNet.Forms"
              mc:Ignorable="d" Background="#FF212121" d:DesignHeight="355" d:DesignWidth="596"
+             xmlns:fa="http://schemas.fontawesome.io/icons/"
              Loaded="UserControlLoaded"
              Focusable="True"
 MouseUp="focusOnVideo"
@@ -102,6 +103,7 @@ MouseUp="focusOnVideo"
                 <RowDefinition Height="1*" />
                 <RowDefinition Height="15" />
             </Grid.RowDefinitions>
+      
 
             <!---
             <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6">
@@ -196,7 +198,7 @@ MouseUp="focusOnVideo"
 
               
                 <Border >
-                    <WindowsFormsHost Name="videoVlc"  >
+                    <WindowsFormsHost Name="videoVlc" GotFocus="VideoVlc_GotFocus" LostFocus="VideoVlc_LostFocus" >
                     </WindowsFormsHost>
 
                     <Border.Style>
@@ -204,6 +206,9 @@ MouseUp="focusOnVideo"
 
                             <Setter Property="Visibility" Value="Collapsed"></Setter>
                             <Style.Triggers >
+                                <Trigger Property="IsFocused" Value="true">
+                                    <Setter Property="Background"  Value="Yellow"/>
+                                </Trigger>
                                 <DataTrigger Binding="{Binding Status}" Value="{x:Static local:MEDIA_STATUS.PLAYING}">
                                     <Setter Property="Visibility" Value="Visible"></Setter>
                                 </DataTrigger>
@@ -216,9 +221,28 @@ MouseUp="focusOnVideo"
                     </Border.Style>
                 </Border>
 
+                <!--
                 <Border >
-                    <WindowsFormsHost Name="videoVlc2"  >
-                    </WindowsFormsHost>
+                    
+                    <Grid>
+                        <fa:ImageAwesome Icon="Spinner" Spin="True" SpinDuration="1" Stretch="Uniform" Foreground="#424242"  Height="70" >
+                        </fa:ImageAwesome>
+                        <WindowsFormsHost Name="videoVlc2"  >
+                            <WindowsFormsHost.Style>
+                                <Style TargetType="WindowsFormsHost">
+
+                                    <Style.Triggers >
+                                        <DataTrigger Binding="{Binding RelatedVideo.Loading}" Value="True">
+                                            <Setter Property="Visibility" Value="Hidden"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+
+                                </Style>
+                            </WindowsFormsHost.Style>
+                        </WindowsFormsHost>
+
+                    </Grid>
+
                     <Border.Style>
                         <Style TargetType="Border">
 
@@ -240,6 +264,8 @@ MouseUp="focusOnVideo"
 
                     </Border.Style>
                 </Border>
+                -->
+                
 
                 <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6">
 
@@ -258,6 +284,7 @@ MouseUp="focusOnVideo"
 
                 </Border>
 
+                <!--
                 <Border Grid.Row="0" Grid.Column="6" Grid.ColumnSpan="6">
 
                     <Image Source="{Binding RelatedVideo.ThumbnailSrc}"></Image>
@@ -277,7 +304,7 @@ MouseUp="focusOnVideo"
                     </Border.Style>
 
                 </Border>
-
+                -->
             </UniformGrid>
 
             <Grid  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="12">
@@ -296,8 +323,6 @@ MouseUp="focusOnVideo"
 
 
         </Grid>
-   
-
         <Button  Focusable="False" Style="{StaticResource ControlButton}"  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Click = "rewind"   >
             <Button.Content>
                 <Path Width="29.875" Height="20.045" Stretch="Fill"  Style="{StaticResource ButtonIcon}" Data="F1 M 57,25L 40.25,38L 57,51L 57,25 Z M 35,25L 18.25,38L 35,51L 35,25 Z "/>
@@ -310,11 +335,11 @@ MouseUp="focusOnVideo"
                 <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
                     <Setter Property="Visibility" Value="Hidden"></Setter>
                     <Style.Triggers>
-                    
+
                         <DataTrigger Binding="{Binding Status}" Value="{x:Static local:MEDIA_STATUS.PLAYING}">
                             <Setter Property="Visibility" Value="Visible"></Setter>
                         </DataTrigger>
-                      
+
 
                     </Style.Triggers>
                 </Style>
@@ -355,167 +380,186 @@ MouseUp="focusOnVideo"
 
 
         </Button>
-        
+
         <Button Focusable="False" Grid.Row="1" Style="{StaticResource ControlButton}" Grid.Column="6" Grid.ColumnSpan="3" Click = "fastForward"  >
             <Button.Content>
                 <Path  Style="{StaticResource ButtonIcon}" Width="29.809" Height="20"   Stretch="Fill"   Data="F1 M 19,25L 35.75,38L 19,51L 19,25 Z M 41,25L 57.75,38L 41,51L 41,25 Z "/>
             </Button.Content>
         </Button>
 
-        <UniformGrid Grid.Row="1" Grid.Column="9"  Grid.ColumnSpan="3"   Rows="1"  >
-            <Button  Focusable="False" FontWeight="Bold" Click="setSpeed"  Tag="1">
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
 
+        <UniformGrid  Grid.Row="1" Grid.Column="9"  Grid.ColumnSpan="3"  Rows="1">
+            <UniformGrid.Style>
+                <Style TargetType="UniformGrid">
+                    <Setter Property="Background" Value="#ecf0f1"></Setter>
+                </Style>
+            </UniformGrid.Style>
+            <UniformGrid  Rows="1"  >
+
+                <UniformGrid.Style>
+                    <Style TargetType="UniformGrid">
                         <Style.Triggers>
 
-                            <DataTrigger Binding="{Binding Speed}" Value="1">
-                                <Setter Property="Foreground" Value="#00695c"></Setter>
+                            <DataTrigger Binding="{Binding CanModifySpeed}" Value="false">
+                                <Setter Property="Visibility" Value="Collapsed"></Setter>
                             </DataTrigger>
-
 
                         </Style.Triggers>
                     </Style>
-                </Button.Style>
-                X1
-            </Button>
-            <Button Focusable="False" FontWeight="Bold" Click="setSpeed" Tag="2" >
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
-
-                        <Style.Triggers>
-
-                            <DataTrigger Binding="{Binding Speed}" Value="2">
-                                <Setter Property="Foreground" Value="#00695c"></Setter>
-                            </DataTrigger>
+                </UniformGrid.Style>
 
 
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-                X2
-            </Button>
-            <Button Focusable="False" FontWeight="Bold"  Tag="3" Click="setSpeed">
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
+                <Button  Focusable="False" FontWeight="Bold" Click="setSpeed"  Tag="1">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
 
-                        <Style.Triggers>
+                            <Style.Triggers>
 
-                            <DataTrigger Binding="{Binding Speed}" Value="3">
-                                <Setter Property="Foreground" Value="#00695c"></Setter>
-                            </DataTrigger>
+                                <DataTrigger Binding="{Binding Speed}" Value="1">
+                                    <Setter Property="Background" Value="#80cbc4"></Setter>
+                                </DataTrigger>
 
 
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-                X3
-            </Button >
-            <Button Focusable="False" FontWeight="Bold" Tag="4" Click="setSpeed">
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    X1
+                </Button>
+                <Button Focusable="False" FontWeight="Bold" Click="setSpeed" Tag="2" >
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
 
-                        <Style.Triggers>
+                            <Style.Triggers>
 
-                            <DataTrigger Binding="{Binding Speed}" Value="4">
-                                <Setter Property="Foreground" Value="#00695c"></Setter>
-                            </DataTrigger>
-
-
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-                X4
-            </Button>
-            <Button Focusable="False" FontWeight="Bold" Tag="5" Click="setSpeed">
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
-
-                        <Style.Triggers>
-
-                            <DataTrigger Binding="{Binding Speed}" Value="5">
-                                <Setter Property="Foreground" Value="#00695c"></Setter>
-                            </DataTrigger>
+                                <DataTrigger Binding="{Binding Speed}" Value="2">
+                                    <Setter Property="Background" Value="#80cbc4"></Setter>
+                                </DataTrigger>
 
 
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-                X5
-            </Button>
-            <Button Focusable="False" FontWeight="Bold" Tag="6" Click="setSpeed">
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    X2
+                </Button>
+                <Button Focusable="False" FontWeight="Bold"  Tag="3" Click="setSpeed">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
 
-                        <Style.Triggers>
+                            <Style.Triggers>
 
-                            <DataTrigger Binding="{Binding Speed}" Value="6">
-                                <Setter Property="Foreground" Value="#00695c"></Setter>
-                            </DataTrigger>
-
-
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-                X6
-            </Button>
-
-            <Button Focusable="False" FontWeight="Bold" Tag="7" Click="setSpeed">
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
-
-                        <Style.Triggers>
-
-                            <DataTrigger Binding="{Binding Speed}" Value="7">
-                                <Setter Property="Foreground" Value="#00695c"></Setter>
-                            </DataTrigger>
+                                <DataTrigger Binding="{Binding Speed}" Value="3">
+                                    <Setter Property="Background" Value="#80cbc4"></Setter>
+                                </DataTrigger>
 
 
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-                X7
-            </Button>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    X3
+                </Button >
+                <Button Focusable="False" FontWeight="Bold" Tag="4" Click="setSpeed">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
 
-            <Button Focusable="False" FontWeight="Bold" Tag="8" Click="setSpeed">
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
+                            <Style.Triggers>
 
-                        <Style.Triggers>
-
-                            <DataTrigger Binding="{Binding Speed}" Value="8">
-                                <Setter Property="Foreground" Value="#00695c"></Setter>
-                            </DataTrigger>
-
-
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-                X8
-            </Button>
+                                <DataTrigger Binding="{Binding Speed}" Value="4">
+                                    <Setter Property="Background" Value="#80cbc4"></Setter>
+                                </DataTrigger>
 
 
-            <Button Focusable="False" FontWeight="Bold" Tag="9" Click="setSpeed">
-                <Button.Style>
-                    <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    X4
+                </Button>
+                <Button Focusable="False" FontWeight="Bold" Tag="5" Click="setSpeed">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
 
-                        <Style.Triggers>
+                            <Style.Triggers>
 
-                            <DataTrigger Binding="{Binding Speed}" Value="9">
-                                <Setter Property="Foreground" Value="#00695c"></Setter>
-                            </DataTrigger>
+                                <DataTrigger Binding="{Binding Speed}" Value="5">
+                                    <Setter Property="Background" Value="#80cbc4"></Setter>
+                                </DataTrigger>
 
 
-                        </Style.Triggers>
-                    </Style>
-                </Button.Style>
-                X9
-            </Button>
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    X5
+                </Button>
+                <Button Focusable="False" FontWeight="Bold" Tag="6" Click="setSpeed">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
 
+                            <Style.Triggers>
+
+                                <DataTrigger Binding="{Binding Speed}" Value="6">
+                                    <Setter Property="Background" Value="#80cbc4"></Setter>
+                                </DataTrigger>
+
+
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    X6
+                </Button>
+                <Button Focusable="False" FontWeight="Bold" Tag="7" Click="setSpeed">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
+
+                            <Style.Triggers>
+
+                                <DataTrigger Binding="{Binding Speed}" Value="7">
+                                    <Setter Property="Background" Value="#80cbc4"></Setter>
+                                </DataTrigger>
+
+
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    X7
+                </Button>
+                <Button Focusable="False" FontWeight="Bold" Tag="8" Click="setSpeed">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
+
+                            <Style.Triggers>
+
+                                <DataTrigger Binding="{Binding Speed}" Value="8">
+                                    <Setter Property="Background" Value="#80cbc4"></Setter>
+                                </DataTrigger>
+
+
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    X8
+                </Button>
+                <Button Focusable="False" FontWeight="Bold" Tag="9" Click="setSpeed">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
+
+                            <Style.Triggers>
+
+                                <DataTrigger Binding="{Binding Speed}" Value="9">
+                                    <Setter Property="Background" Value="#80cbc4"></Setter>
+                                </DataTrigger>
+
+
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    X9
+                </Button>
+
+
+            </UniformGrid>
 
         </UniformGrid>
-
-
+      
+        
 
     </Grid>
 

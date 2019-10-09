@@ -78,10 +78,26 @@ namespace videoflux.pages
             {
                 if(this.vplayer.Video != null)
                 {
+                    if(this.vplayer.Video.RelatedVideo != null)
+                    {
+                        this.vplayer.Video.RelatedVideo.Dispose();
+                    }
                     this.vplayer.Video.Dispose();
                 }
-                 
-                this.vplayer.Video = (Video)e.Source; 
+ 
+
+                this.vplayer.Video = (Video)e.Source;
+
+                if (this.vplayer.Video.RelatedVideo != null)
+                {
+                    this.vplayer2Container.Visibility = Visibility.Visible;
+                    this.vplayer2.Video = this.vplayer.Video.RelatedVideo;
+                    this.vplayer2.Video.CanModifySpeed = false;
+                }
+                else
+                {
+                    this.vplayer2Container.Visibility = Visibility.Collapsed;
+                }
 
                 this.vsnapshots.SnapshotsGroup.Dispose();
                 this.vsnapshots.SnapshotsGroup.Video = this.vplayer.Video;
@@ -111,6 +127,7 @@ namespace videoflux.pages
             {
                 this.vplayer.Video.Pause(); 
                 this.vplayer.Visibility = Visibility.Hidden;  
+                this.vplayer2.Visibility = Visibility.Hidden;
                 Crop Crop = new Crop(snapshot);
                 this.vcropper.Crop = Crop;
             }
@@ -124,6 +141,10 @@ namespace videoflux.pages
             snapshots[1] = snapshot;
             this.vsnapshots.SnapshotsGroup.Snapshots = snapshots;
             this.vplayer.Visibility = Visibility.Visible;
+            if(this.vplayer.Video.RelatedVideo != null)
+            {
+                this.vplayer2.Visibility = Visibility.Visible;
+            }
             this.vplayer.Focus();
         }
 
@@ -249,12 +270,84 @@ namespace videoflux.pages
 
         private void Page_KeyDown(object sender, KeyEventArgs e)
         {
+
             //Console.WriteLine(e.Key);
         }
 
         private void Page_Unloaded(object sender, RoutedEventArgs e)
         {
          }
+
+        private void Page_KeyUp(object sender, KeyEventArgs e)
+        {
+         
+            /*
+            if(vplayer.Video != null && vplayer.Video.RelatedVideo != null)
+            {
+                if (e.Key == Key.F1)
+                {
+                    e.Handled = true;
+
+                    this.vplayer2.Focus();
+                    var e1 = new KeyEventArgs(Keyboard.PrimaryDevice, Keyboard.PrimaryDevice.ActiveSource, 0, Key.F1) { RoutedEvent = Keyboard.KeyDownEvent };
+                    InputManager.Current.ProcessInput(e1);
+                }
+                else if (e.Key == Key.F2 || e.Key == Key.F3)
+                {
+
+                    e.Handled = true;
+
+                    this.vplayer.Focus();
+                    var e1 = new KeyEventArgs(Keyboard.PrimaryDevice, Keyboard.PrimaryDevice.ActiveSource, 0, e.Key) { RoutedEvent = Keyboard.KeyDownEvent };
+                    InputManager.Current.ProcessInput(e1);
+
+                }
+                else if (e.Key == Key.Space)
+                {
+                    e.Handled = true;
+
+                    this.vplayer.Focus();
+                    var e1 = new KeyEventArgs(Keyboard.PrimaryDevice, Keyboard.PrimaryDevice.ActiveSource, 0, Key.Space) { RoutedEvent = Keyboard.KeyDownEvent };
+                    InputManager.Current.ProcessInput(e1);
+
+                    this.vplayer2.Focus();
+                    InputManager.Current.ProcessInput(e1);
+
+                }
+                else if(e.Key == Key.S)
+                {
+                    e.Handled = true;
+
+                    var e1 = new KeyEventArgs(Keyboard.PrimaryDevice, Keyboard.PrimaryDevice.ActiveSource, 0, Key.S) { RoutedEvent = Keyboard.KeyDownEvent };
+                    this.vplayer.Focus();
+                    InputManager.Current.ProcessInput(e1);
+                }
+            }*/
+
+        }
+
+        private void Vplayer_GotFocus(object sender, RoutedEventArgs e)
+        {
+            this.vplayerSelectionLine.Background = new SolidColorBrush(Color.FromRgb(0, 150, 136));
+        }
+
+        private void Vplayer2_GotFocus(object sender, RoutedEventArgs e)
+        {
+            this.vplayer2SelectionLine.Background = new SolidColorBrush(Color.FromRgb(0, 150, 136));
+
+        }
+
+        private void Vplayer_LostFocus(object sender, RoutedEventArgs e)
+        {
+            this.vplayerSelectionLine.Background = new SolidColorBrush(Color.FromArgb(0,0,0,0));
+
+        }
+
+        private void Vplayer2_LostFocus(object sender, RoutedEventArgs e)
+        {
+            this.vplayer2SelectionLine.Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
+
+        }
     }
 
 }

@@ -12,7 +12,7 @@
       mc:Ignorable="d" 
       Loaded="Page_Loaded"
       Unloaded="Page_Unloaded"
-      
+      KeyUp="Page_KeyUp"
       d:DesignHeight="450" d:DesignWidth="800"
       KeyDown="Page_KeyDown" 
       Title="VideoPlayerPage">
@@ -48,8 +48,36 @@
 
         <VL:VideoPlaylist x:Name="vplaylist" LoadedPlaylist="onLoadedPlaylist" SelectedVideo="onSelectedVideo" Grid.Column="0" Grid.ColumnSpan="9" Grid.Row="0" />
 
-        <VP:VideoPlayer  SnapshotTaken="onSnapshotTaken"  x:Name="vplayer"  Grid.Column="0" Grid.ColumnSpan="9"  Grid.Row="1"  >
-        </VP:VideoPlayer>
+        <UniformGrid Grid.Column="0" Grid.ColumnSpan="9" Grid.Row="1" Rows="1" >
+
+            <Grid x:Name="vplayerContainer">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"></RowDefinition>
+                    <RowDefinition Height="5"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <VP:VideoPlayer Grid.Row="0" GotFocus="Vplayer_GotFocus" LostFocus="Vplayer_LostFocus"  SnapshotTaken="onSnapshotTaken"  x:Name="vplayer"   >
+                </VP:VideoPlayer>
+
+                <Border Grid.Row="1" x:Name="vplayerSelectionLine">
+                </Border>
+                
+            </Grid>
+
+            <Grid Visibility="Collapsed"  x:Name="vplayer2Container">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="1*"></RowDefinition>
+                    <RowDefinition Height="5"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <VP:VideoPlayer  Grid.Row="0" GotFocus="Vplayer2_GotFocus" LostFocus="Vplayer2_LostFocus" Tag="LicensePlate" SnapshotTaken="onSnapshotTaken"   x:Name="vplayer2"  >
+                </VP:VideoPlayer>
+
+                <Border Grid.Row="1" x:Name="vplayer2SelectionLine">
+                </Border>
+            </Grid>
+            
+        </UniformGrid>
 
 
         <VI:DeviceInfo    x:Name="vinfo" Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="9" ></VI:DeviceInfo>

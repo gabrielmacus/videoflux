@@ -1,6 +1,5 @@
 ﻿
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Threading;
@@ -9,9 +8,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
-using videoflux.components.DeviceInfo;
 using videoflux.components.VideoSnapshots;
-using Vlc.DotNet;
 
 namespace videoflux.components.VideoPlayer
 {
@@ -21,10 +18,9 @@ namespace videoflux.components.VideoPlayer
         public delegate void SnapshotTakenEventHandler(object sender,RoutedEventArgs e,Snapshot snapshot);
         public event SnapshotTakenEventHandler SnapshotTaken;
         #endregion
-
-
+         
+       
         public Video video = new Video();
-
         public Video Video
         {
             get { return video;  }
@@ -38,6 +34,7 @@ namespace videoflux.components.VideoPlayer
                 video.Control = (Vlc.DotNet.Forms.VlcControl)this.videoVlc.Child;
                 video.Speed = 1;
 
+                /*
                 if (video.RelatedVideo != null)
                 {
                     var relatedVideo = video.RelatedVideo;
@@ -46,7 +43,7 @@ namespace videoflux.components.VideoPlayer
                     relatedVideo.Speed = 1;
                     video.RelatedVideo = relatedVideo;
                     
-                }
+                }*/
 
                 this.Focus();
 
@@ -126,6 +123,7 @@ namespace videoflux.components.VideoPlayer
         }
         public void progresssbarSliding(object sender,MouseEventArgs e)
         {
+         
             if(pbarSliding)
             {
                 var pbar = (ProgressBar)sender;
@@ -145,32 +143,60 @@ namespace videoflux.components.VideoPlayer
         }
         public void seekOnProgressbar(object sender, MouseEventArgs e)
         {
+            /*
             //Vuelvo el video a velocidad normal, para evitar desincronización cuando reproduzco 2 videos simultaneamente
             Video.Speed = 1;
+            */
             pbarSliding = true;
             progresssbarSliding(sender, e);
-             
+
+            //syncVideos();
         }
 
+        /*
+        public void syncVideos()
+        {
+            if(this.Video.RelatedVideo != null)
+            {
+                if(!this.Video.RelatedVideo.Loading)
+                {
+                    //this.Video.RelatedVideo.Loading = true;
+                    //Sincronizo el tiempo del video 2
+                    var tl = new Thread(new ThreadStart(delegate {
+                        Thread.Sleep(1000);
+                        this.Video.RelatedVideo.Control.Time = this.Video.Control.Time;
+                        //Thread.Sleep(500);
+                        //this.Video.RelatedVideo.Loading = false;
+                    }));
+                    tl.Start();
+                }
+            }
+
+        }*/
+        
         public void UserControlLoaded(object sender, RoutedEventArgs e)
         {
             var arch = (IntPtr.Size == 4) ? "x86" : "x64";
-
             //Inicializo el reproductor 1
             var videoVlc = new Vlc.DotNet.Forms.VlcControl();
             videoVlc.BeginInit();
             videoVlc.VlcLibDirectory = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"libvlc\win-{arch}"));
-            //videoVlc.VlcMediaplayerOptions = new[] { "--input-fast-seek" }; 
+
+            if((string)this.Tag != "LicensePlate")
+            {
+                videoVlc.VlcMediaplayerOptions = new[] { "--input-fast-seek" };
+            }
             videoVlc.EndInit();
             this.videoVlc.Child = videoVlc;
 
             //Inicializo el reproductor 2
+            /*
             var videoVlc2 = new Vlc.DotNet.Forms.VlcControl();
             videoVlc2.BeginInit();
             videoVlc2.VlcLibDirectory = new DirectoryInfo(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, $@"libvlc\win-{arch}"));
             //videoVlc2.VlcMediaplayerOptions = new[] { "--input-fast-seek" };
             videoVlc2.EndInit();
-            this.videoVlc2.Child = videoVlc2;
+            this.videoVlc2.Child = videoVlc2;*/
 
 
             this.Focus();
@@ -183,8 +209,8 @@ namespace videoflux.components.VideoPlayer
 
         public void play(object sender, RoutedEventArgs e)
         {
-
             this.Video.Play();
+            //syncVideos();
 
         }
 
@@ -199,6 +225,8 @@ namespace videoflux.components.VideoPlayer
             var speed = UInt16.Parse(button.Tag.ToString());
   
             Video.Speed = speed;
+
+            //syncVideos();
 
         }
 
@@ -216,6 +244,14 @@ namespace videoflux.components.VideoPlayer
 
             switch (e.Key)
             {
+                case Key.S:
+                    if(this.Video.RelatedVideo != null)
+                    {
+                        this.Video.RelatedVideo.Play();
+                        this.Video.RelatedVideo.Control.Time = this.Video.Control.Time;
+                    }
+                    e.Handled = true;
+                    break;
                 case Key.Space:
                     if (this.Video.Status == MEDIA_STATUS.PLAYING)
                     {
@@ -317,12 +353,14 @@ namespace videoflux.components.VideoPlayer
                 case Key.Add:
 
                     Video.Speed = Video.Speed + 1;
-                    e.Handled = true; 
+                    e.Handled = true;
+                    //syncVideos();
                     break;
 
                 case Key.Subtract:
                     Video.Speed = Video.Speed - 1;
                     e.Handled = true;
+                    //syncVideos();
                     break;
                 default:
                     var pressedNumber = 0;
@@ -367,8 +405,9 @@ namespace videoflux.components.VideoPlayer
                     if(pressedNumber > 0)
                     {
                         Video.Speed = (uint)pressedNumber;
+                        //syncVideos();
                     }
-
+                    
 
                     break;
 
@@ -381,16 +420,24 @@ namespace videoflux.components.VideoPlayer
 
         public void rewind(object sender, RoutedEventArgs e)
         {
+            /*
             //Vuelvo el video a velocidad normal, para evitar desincronización cuando reproduzco 2 videos simultaneamente
             Video.Speed = 1;
+            */
             this.Video.Rewind(5);
-
+            
+            //syncVideos();
         }
+        
         public void fastForward(object sender, RoutedEventArgs e)
         {
+            /*
             //Vuelvo el video a velocidad normal, para evitar desincronización cuando reproduzco 2 videos simultaneamente
             Video.Speed = 1;
+            */
             this.Video.FastForward(5);
+
+            //syncVideos();
         }
 
 
@@ -398,6 +445,7 @@ namespace videoflux.components.VideoPlayer
         {
 
             this.Video.PrevFrame();
+            //syncVideos();
         }
         public void nextFrame(object sender, RoutedEventArgs e)
         {
@@ -411,9 +459,18 @@ namespace videoflux.components.VideoPlayer
             this.Focus();
         }
 
+        private void VideoVlc_LostFocus(object sender, RoutedEventArgs e)
+        {
 
-      
+        }
 
+        private void VideoVlc_GotFocus(object sender, RoutedEventArgs e)
+        {
+
+            var converter = new System.Windows.Media.BrushConverter();
+
+            this.videoVlc.Background = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF90");
+        }
     }
 
 
@@ -442,6 +499,8 @@ namespace videoflux.components.VideoPlayer
         protected VIDEO_STATUS videoStatus = VIDEO_STATUS.NOT_DONE;
         protected bool active = false;
         protected Video relatedVideo;
+        protected bool loading = false;
+        protected bool canModifySpeed = true;
 
         #region Constructors
 
@@ -453,6 +512,31 @@ namespace videoflux.components.VideoPlayer
         #endregion
 
         #region Setters/Getters
+        public bool CanModifySpeed
+        {
+            get
+            {
+                return canModifySpeed;
+            }
+            set
+            {
+                canModifySpeed = value;
+                NotifyPropertyChanged("CanModifySpeed");
+
+            }
+        }
+        public bool Loading
+        {
+            get
+            {
+                return loading;
+            }
+            set
+            {
+                loading = value;
+                NotifyPropertyChanged("Loading");
+            }
+        }
         public Video RelatedVideo
         {
             get
@@ -505,10 +589,11 @@ namespace videoflux.components.VideoPlayer
             set
             {
                 this.Control.Position = (value > 0) ? value / 100 : value;
-                if(this.relatedVideo != null)
+                
+                /*if(this.relatedVideo != null)
                 {
                     this.relatedVideo.Position = value;
-                }
+                }*/
             }
 
         }
@@ -537,6 +622,10 @@ namespace videoflux.components.VideoPlayer
             get { return speed; }
             set {
 
+                if(!CanModifySpeed)
+                {
+                    value = 1;
+                }
                 if(IsMediaPresent)
                 {
                     if (value < 1)
@@ -555,10 +644,11 @@ namespace videoflux.components.VideoPlayer
                 NotifyPropertyChanged("Speed");
 
 
+                /*
                 if (this.relatedVideo != null)
                 {
                     this.relatedVideo.Speed = value;
-                }
+                }*/
 
             }
         }
@@ -769,9 +859,7 @@ namespace videoflux.components.VideoPlayer
         {
             position = this.Control.Position;
             NotifyPropertyChanged("Position");
-            NotifyPropertyChanged("PositionProgress"); 
-
-
+            NotifyPropertyChanged("PositionProgress");
         }
         private void Control_Playing(object sender, Vlc.DotNet.Core.VlcMediaPlayerPlayingEventArgs e)
         {
@@ -839,10 +927,11 @@ namespace videoflux.components.VideoPlayer
             
             control.Play();
 
+            /*
             if(this.relatedVideo != null)
             {
                 this.relatedVideo.Play();
-            }
+            }*/
  
             return true;
 
@@ -859,10 +948,11 @@ namespace videoflux.components.VideoPlayer
 
             control.Pause();
 
+            /*
             if(this.relatedVideo != null)
             {
                 this.relatedVideo.Pause();
-            }
+            }*/
 
             return true;
 
@@ -877,11 +967,12 @@ namespace videoflux.components.VideoPlayer
 
             control.Stop();
 
+            /*
             if (this.relatedVideo != null)
             {
                 this.relatedVideo.Stop();
             }
-
+            */
             return true;
 
         }
@@ -894,17 +985,18 @@ namespace videoflux.components.VideoPlayer
             } 
             control.Time = control.Time + (seconds * 1000);
 
-
-            if (relatedVideo != null)
-            {
-                relatedVideo.Position = Position;
-            }
-
             /*
-            if (this.relatedVideo != null)
-            {
-                this.relatedVideo.FastForward(seconds);
-            }*/
+           if (relatedVideo != null)
+           {
+
+               relatedVideo.Control.Position = Control.Position;
+           }
+
+
+           if (this.relatedVideo != null)
+           {
+               this.relatedVideo.FastForward(seconds);
+           }*/
 
             return true;
 
@@ -921,10 +1013,11 @@ namespace videoflux.components.VideoPlayer
             
             control.Time = control.Time - (seconds * 1000);
 
+            /*
             if (relatedVideo != null)
             {
                 relatedVideo.Position = Position;
-            }
+            }*/
 
             /*
             if (this.relatedVideo != null)
@@ -947,10 +1040,11 @@ namespace videoflux.components.VideoPlayer
             NotifyPropertyChanged("TimeElapsed");
             NotifyPropertyChanged("TimeRemaining");
 
+            /*
             if (this.relatedVideo != null)
             {
                 this.relatedVideo.NextFrame();
-            }
+            }*/
 
             return true;
         }
@@ -962,21 +1056,22 @@ namespace videoflux.components.VideoPlayer
             } 
             control.Time = control.Time - 500;
 
+            /*
             if (this.relatedVideo != null)
             {
                 this.relatedVideo.PrevFrame();
-            }
+            }*/
 
             return true;
 
         }
         public Snapshot Snapshot(int number)
         {
-
-            if (this.relatedVideo != null && number != 1)
+            /*
+            if (this.relatedVideo != null && number == 1)
             {
               return  this.relatedVideo.Snapshot(number);
-            }
+            }*/
 
 
             if (IsMediaPresent)
@@ -1019,9 +1114,16 @@ namespace videoflux.components.VideoPlayer
                 FileInfo file = new FileInfo(new Uri(Src).LocalPath);
                 String thumbailPath = file.DirectoryName + "\\thumb_" + file.Name + ".jpg";
                 File.Delete(thumbailPath);
-                ffMpeg.GetVideoThumbnail(file.FullName, thumbailPath);
-
-                File.SetAttributes(thumbailPath, FileAttributes.Hidden);
+                try
+                {
+                    ffMpeg.GetVideoThumbnail(file.FullName, thumbailPath);
+                    File.SetAttributes(thumbailPath, FileAttributes.Hidden);
+                }
+                catch(Exception e)
+                {
+                    
+                }
+             
                 Thumbnail = thumbailPath;
                 ffMpeg.Abort();
             }

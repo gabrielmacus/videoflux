@@ -40,22 +40,22 @@
                     
                 <Button Grid.Row="0" Click="selectVideo"    Tag="{Binding}"  Focusable="False" Cursor="Hand" BorderThickness="0 0 1 0" BorderBrush="#bdbdbd" Width="120"  >
                     <Grid>
-
-                        <fa:ImageAwesome Icon="Spinner" Foreground="#424242" Spin="True" Height="23" >
-                            <fa:ImageAwesome.Style>
+                            <!--
+                            <fa:ImageAwesome Icon="VideoCamera" Stretch="UniformToFill" Foreground="#424242"  Height="23" >
+                                <fa:ImageAwesome.Style>
                                     <Style TargetType="fa:ImageAwesome">
                                     </Style>
-                            </fa:ImageAwesome.Style>
-                        </fa:ImageAwesome>
+                                </fa:ImageAwesome.Style>
+                            </fa:ImageAwesome>-->
+                            <Image   Source="/Resources/images/video-placeholder.jpg" Stretch="UniformToFill"></Image>
 
-                        
-                        <Image   Source="{Binding ThumbnailSrc}" Stretch="UniformToFill"></Image>
+                            <Image   Source="{Binding ThumbnailSrc}" Stretch="UniformToFill"></Image>
                       
                         <TextBlock Text="{Binding Fines}" ToolTip="Cantidad de multas" FontWeight="Bold" VerticalAlignment="Top" HorizontalAlignment="Left" Foreground="White" Background="Black" Padding="3"></TextBlock>
                         
                         <!-- 
                     <Label Background="#212121" Foreground="White"   FontSize="11" Content="{Binding ParsedDuration}" Padding="3"  HorizontalAlignment="Left" VerticalAlignment="Bottom"></Label>
--->
+                        -->
                     </Grid>
 
                 </Button>
