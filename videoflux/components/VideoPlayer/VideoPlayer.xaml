@@ -6,6 +6,7 @@
              xmlns:local="clr-namespace:videoflux.components.VideoPlayer" 
              xmlns:wf="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms" 
              xmlns:vlc="clr-namespace:Vlc.DotNet.Forms;assembly=Vlc.DotNet.Forms"
+              xmlns:services="clr-namespace:videoflux.services"
              mc:Ignorable="d" Background="#FF212121" d:DesignHeight="355" d:DesignWidth="596"
              xmlns:fa="http://schemas.fontawesome.io/icons/"
              Loaded="UserControlLoaded"
@@ -52,6 +53,7 @@ MouseUp="focusOnVideo"
     </UserControl.Resources>
 
 
+
     <Grid >
 
         <Grid.ColumnDefinitions>
@@ -71,15 +73,17 @@ MouseUp="focusOnVideo"
             <ColumnDefinition Width="1*" />
             <ColumnDefinition Width="1*" />
             <ColumnDefinition Width="1*" />
+
+            <ColumnDefinition Width="50" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="12*" />
             <RowDefinition Height="40" />
- 
+
         </Grid.RowDefinitions>
 
 
-        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="12"   >
+        <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="13"   >
 
             <Grid.ColumnDefinitions>
 
@@ -103,7 +107,7 @@ MouseUp="focusOnVideo"
                 <RowDefinition Height="1*" />
                 <RowDefinition Height="15" />
             </Grid.RowDefinitions>
-      
+
 
             <!---
             <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6">
@@ -196,7 +200,7 @@ MouseUp="focusOnVideo"
 
             <UniformGrid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="12" Rows="1"  >
 
-              
+
                 <Border >
                     <WindowsFormsHost Name="videoVlc" GotFocus="VideoVlc_GotFocus" LostFocus="VideoVlc_LostFocus" >
                     </WindowsFormsHost>
@@ -215,7 +219,7 @@ MouseUp="focusOnVideo"
                                 <DataTrigger Binding="{Binding Status}" Value="{x:Static local:MEDIA_STATUS.PAUSED}">
                                     <Setter Property="Visibility" Value="Visible"></Setter>
                                 </DataTrigger>
-                             
+
                             </Style.Triggers>
                         </Style>
                     </Border.Style>
@@ -265,14 +269,14 @@ MouseUp="focusOnVideo"
                     </Border.Style>
                 </Border>
                 -->
-                
+
 
                 <Border Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="6">
 
                     <Image Source="{Binding ThumbnailSrc}"></Image>
                     <Border.Style>
                         <Style TargetType="Border">
-                            <Setter Property="Visibility" Value="Collapsed"></Setter> 
+                            <Setter Property="Visibility" Value="Collapsed"></Setter>
                             <Style.Triggers >
                                 <DataTrigger Binding="{Binding Status}" Value="{x:Static local:MEDIA_STATUS.STOPPED}">
                                     <Setter Property="Visibility" Value="Visible"></Setter>
@@ -307,19 +311,19 @@ MouseUp="focusOnVideo"
                 -->
             </UniformGrid>
 
-            <Grid  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="12">
+            <Grid  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="13">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="auto"></ColumnDefinition>
                     <ColumnDefinition Width="1*"></ColumnDefinition>
                     <ColumnDefinition Width="auto"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
-                <TextBlock FontWeight="Bold" TextAlignment="Center"  VerticalAlignment="Center" Padding="3" Background="White" Foreground="Black" Grid.Column="0" Text="{Binding TimeElapsed}"> </TextBlock>
+                <TextBlock FontWeight="Bold" TextAlignment="Center" x:Name="timeRemaining" VerticalAlignment="Center" FontSize="18" Padding="3" Background="White" Foreground="Black" Grid.Column="0" Text="{Binding TimeElapsed}"></TextBlock>
                 <ProgressBar  Foreground="#00c853"  Grid.Column="1" MouseUp="progressbarSlideEnd" Height="40" MouseMove="progresssbarSliding"  MouseDown="seekOnProgressbar"  Background="#bdc3c7"  BorderThickness="0" Style="{StaticResource VideoProgress}"  Value="{Binding PositionProgress}" >
                 </ProgressBar>
-                <TextBlock FontWeight="Bold"  TextAlignment="Center"  VerticalAlignment="Center"  Padding="3" Background="White" Foreground="Black" Grid.Column="2" Text="{Binding TimeRemaining}"></TextBlock>
+                <TextBlock FontWeight="Bold"  TextAlignment="Center" x:Name="timeElapsed" VerticalAlignment="Center" FontSize="18" Padding="3" Background="White" Foreground="Black" Grid.Column="2" Text="{Binding TimeRemaining}"></TextBlock>
             </Grid>
-         
+
 
 
         </Grid>
@@ -388,6 +392,7 @@ MouseUp="focusOnVideo"
         </Button>
 
 
+
         <UniformGrid  Grid.Row="1" Grid.Column="9"  Grid.ColumnSpan="3"  Rows="1">
             <UniformGrid.Style>
                 <Style TargetType="UniformGrid">
@@ -423,7 +428,7 @@ MouseUp="focusOnVideo"
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
-                    X1
+                    1
                 </Button>
                 <Button Focusable="False" FontWeight="Bold" Click="setSpeed" Tag="2" >
                     <Button.Style>
@@ -439,7 +444,7 @@ MouseUp="focusOnVideo"
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
-                    X2
+                    2
                 </Button>
                 <Button Focusable="False" FontWeight="Bold"  Tag="3" Click="setSpeed">
                     <Button.Style>
@@ -455,7 +460,7 @@ MouseUp="focusOnVideo"
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
-                    X3
+                    3
                 </Button >
                 <Button Focusable="False" FontWeight="Bold" Tag="4" Click="setSpeed">
                     <Button.Style>
@@ -471,7 +476,7 @@ MouseUp="focusOnVideo"
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
-                    X4
+                    4
                 </Button>
                 <Button Focusable="False" FontWeight="Bold" Tag="5" Click="setSpeed">
                     <Button.Style>
@@ -487,7 +492,7 @@ MouseUp="focusOnVideo"
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
-                    X5
+                    5
                 </Button>
                 <Button Focusable="False" FontWeight="Bold" Tag="6" Click="setSpeed">
                     <Button.Style>
@@ -503,7 +508,7 @@ MouseUp="focusOnVideo"
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
-                    X6
+                    6
                 </Button>
                 <Button Focusable="False" FontWeight="Bold" Tag="7" Click="setSpeed">
                     <Button.Style>
@@ -519,7 +524,7 @@ MouseUp="focusOnVideo"
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
-                    X7
+                    7
                 </Button>
                 <Button Focusable="False" FontWeight="Bold" Tag="8" Click="setSpeed">
                     <Button.Style>
@@ -535,7 +540,7 @@ MouseUp="focusOnVideo"
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
-                    X8
+                    8
                 </Button>
                 <Button Focusable="False" FontWeight="Bold" Tag="9" Click="setSpeed">
                     <Button.Style>
@@ -551,16 +556,36 @@ MouseUp="focusOnVideo"
                             </Style.Triggers>
                         </Style>
                     </Button.Style>
-                    X9
+                    9
                 </Button>
-
 
             </UniformGrid>
 
         </UniformGrid>
-      
-        
 
+
+        <Border  Grid.Column="13" Grid.Row="1" >
+            <Border.Style>
+                <Style TargetType="Border">
+                    <Setter Property="Background" Value="#eeeeee"></Setter>
+                </Style>
+            </Border.Style>
+
+            <TextBox   x:Name="seekOffset" Text="{Binding SeekOffset,Mode=TwoWay,UpdateSourceTrigger=PropertyChanged}"  Margin="0,0,10,0" Height="20">
+                <TextBox.Style>
+                    <Style TargetType="TextBox">
+                        <Setter Property="Visibility" Value="Hidden"></Setter>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding CanSeekOffset}" Value="true">
+                                <Setter Property="Visibility" Value="Visible"></Setter>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBox.Style>
+            </TextBox>
+
+        </Border>
+        
     </Grid>
 
 </UserControl>

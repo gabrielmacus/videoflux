@@ -247,10 +247,25 @@ namespace videoflux.components.VideoPlayer
                 case Key.S:
                     if(this.Video.RelatedVideo != null)
                     {
-                        this.Video.RelatedVideo.Play();
-                        this.Video.RelatedVideo.Control.Time = this.Video.Control.Time;
+                        var time = this.Video.Control.Time;
+
+                        if (this.Video.RelatedVideo.CanSeekOffset)
+                        {
+                            time = time + (this.Video.RelatedVideo.SeekOffset * 1000);
+                        }
+                        if (time < 0)
+                        {
+                            time = 0;
+                        }
+                        else if(time > this.video.RelatedVideo.Duration)
+                        {
+                            time = this.video.RelatedVideo.Duration;
+                        }
+                        //this.Video.RelatedVideo.Play();
+                        this.Video.RelatedVideo.Control.Time = time;
+                        this.Video.RelatedVideo.Control.Refresh();
                     }
-                    e.Handled = true;
+                    //e.Handled = true;
                     break;
                 case Key.Space:
                     if (this.Video.Status == MEDIA_STATUS.PLAYING)
@@ -322,6 +337,7 @@ namespace videoflux.components.VideoPlayer
                     }
                     else
                     {
+
                         MessageBox.Show("Error al capturar la imagen. Inténtelo nuevamente.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                     e.Handled = true;
@@ -359,55 +375,60 @@ namespace videoflux.components.VideoPlayer
 
                 case Key.Subtract:
                     Video.Speed = Video.Speed - 1;
-                    e.Handled = true;
+                    //e.Handled = true;
                     //syncVideos();
                     break;
                 default:
-                    var pressedNumber = 0;
-
-                    if(e.Key == Key.D1 || e.Key == Key.NumPad1)
-                    {
-                        pressedNumber = 1;
-                    }
-                    else if (e.Key == Key.D2 || e.Key == Key.NumPad2)
-                    {
-                        pressedNumber = 2;
-                    }
-                    else if (e.Key == Key.D3 || e.Key == Key.NumPad3)
-                    {
-                        pressedNumber = 3;
-                    }
-                    else if (e.Key == Key.D4 || e.Key == Key.NumPad4)
-                    {
-                        pressedNumber = 4;
-                    }
-                    else if (e.Key == Key.D5 || e.Key == Key.NumPad5)
-                    {
-                        pressedNumber = 5;
-                    }
-                    else if (e.Key == Key.D6 || e.Key == Key.NumPad6)
-                    {
-                        pressedNumber = 6;
-                    }
-                    else if (e.Key == Key.D7 || e.Key == Key.NumPad7)
-                    {
-                        pressedNumber = 7;
-                    }
-                    else if (e.Key == Key.D8 || e.Key == Key.NumPad8)
-                    {
-                        pressedNumber = 8;
-                    }
-                    else if (e.Key == Key.D9 || e.Key == Key.NumPad9)
-                    {
-                        pressedNumber = 9;
-                    }
-
-                    if(pressedNumber > 0)
-                    {
-                        Video.Speed = (uint)pressedNumber;
-                        //syncVideos();
-                    }
                     
+                    if(!this.seekOffset.IsFocused)
+                    {
+                        var pressedNumber = 0;
+
+                        if (e.Key == Key.D1 || e.Key == Key.NumPad1)
+                        {
+                            pressedNumber = 1;
+                        }
+                        else if (e.Key == Key.D2 || e.Key == Key.NumPad2)
+                        {
+                            pressedNumber = 2;
+                        }
+                        else if (e.Key == Key.D3 || e.Key == Key.NumPad3)
+                        {
+                            pressedNumber = 3;
+                        }
+                        else if (e.Key == Key.D4 || e.Key == Key.NumPad4)
+                        {
+                            pressedNumber = 4;
+                        }
+                        else if (e.Key == Key.D5 || e.Key == Key.NumPad5)
+                        {
+                            pressedNumber = 5;
+                        }
+                        else if (e.Key == Key.D6 || e.Key == Key.NumPad6)
+                        {
+                            pressedNumber = 6;
+                        }
+                        else if (e.Key == Key.D7 || e.Key == Key.NumPad7)
+                        {
+                            pressedNumber = 7;
+                        }
+                        else if (e.Key == Key.D8 || e.Key == Key.NumPad8)
+                        {
+                            pressedNumber = 8;
+                        }
+                        else if (e.Key == Key.D9 || e.Key == Key.NumPad9)
+                        {
+                            pressedNumber = 9;
+                        }
+
+                        if (pressedNumber > 0)
+                        {
+                            Video.Speed = (uint)pressedNumber;
+                            //syncVideos();
+                        }
+
+                    }
+
 
                     break;
 
@@ -471,6 +492,54 @@ namespace videoflux.components.VideoPlayer
 
             this.videoVlc.Background = (System.Windows.Media.Brush)converter.ConvertFromString("#FFFFFF90");
         }
+
+        private void TextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            /*
+            e.Handled = true;
+            switch (e.Key)
+            {
+                case Key.D0:
+                    this.seekOffset.Text += "0";
+                    break;
+                case Key.D1:
+                    this.seekOffset.Text += "1";
+                    break;
+                case Key.D2:
+                    this.seekOffset.Text += "2";
+                    break;
+                case Key.D3:
+                    this.seekOffset.Text += "3";
+                    break;
+                case Key.D4:
+                    this.seekOffset.Text += "4";
+                    break;
+                case Key.D5:
+                    this.seekOffset.Text += "5";
+                    break;
+                case Key.D6:
+                    this.seekOffset.Text += "6";
+                    break;
+                case Key.D7:
+                    this.seekOffset.Text += "7";
+                    break;
+                case Key.D8:
+                    this.seekOffset.Text += "8";
+                    break;
+                case Key.D9:
+                    this.seekOffset.Text += "9";
+                    break;
+                case Key.Subtract:
+                case Key.OemMinus:
+                    this.seekOffset.Text += "-";
+                    break;
+
+            }
+            
+            this.seekOffset.Focus();*/
+      
+            
+        }
     }
 
 
@@ -501,6 +570,8 @@ namespace videoflux.components.VideoPlayer
         protected Video relatedVideo;
         protected bool loading = false;
         protected bool canModifySpeed = true;
+        protected bool canSeekOffset = false;
+        protected int seekOffset = 0;
 
         #region Constructors
 
@@ -512,6 +583,31 @@ namespace videoflux.components.VideoPlayer
         #endregion
 
         #region Setters/Getters
+        public bool CanSeekOffset
+        {
+            get
+            {
+                return canSeekOffset;
+            }
+            set
+            {
+                canSeekOffset = value;
+                NotifyPropertyChanged("CanSeekOffset");
+            }
+        }
+        public int SeekOffset
+        {
+            get
+            {
+
+                return seekOffset;
+            }
+            set
+            {
+                seekOffset = value;
+                NotifyPropertyChanged("SeekOffset");
+            }
+        }
         public bool CanModifySpeed
         {
             get
@@ -545,6 +641,7 @@ namespace videoflux.components.VideoPlayer
             }
             set
             {
+                value.CanSeekOffset = true;
                 relatedVideo = value;
                 NotifyPropertyChanged("RelatedVideo");
 
@@ -588,6 +685,7 @@ namespace videoflux.components.VideoPlayer
             get { return position * 100; }
             set
             {
+        
                 this.Control.Position = (value > 0) ? value / 100 : value;
                 
                 /*if(this.relatedVideo != null)

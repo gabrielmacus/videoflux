@@ -270,7 +270,23 @@ namespace videoflux.pages
 
         private void Page_KeyDown(object sender, KeyEventArgs e)
         {
+            if(e.Key == Key.S)
+            {
 
+                if(this.vplayer2.IsFocused)
+                {
+                    this.vplayer.Focus();
+                    this.vplayer.Video.Pause();
+                    this.vplayer2.Video.Pause();
+                }
+                else
+                {
+                    this.vplayer2.Focus();
+                    this.vplayer2.Video.Pause();
+                    this.vplayer.Video.Pause();
+                }
+               
+            }
             //Console.WriteLine(e.Key);
         }
 
@@ -329,23 +345,30 @@ namespace videoflux.pages
         private void Vplayer_GotFocus(object sender, RoutedEventArgs e)
         {
             this.vplayerSelectionLine.Background = new SolidColorBrush(Color.FromRgb(0, 150, 136));
+            this.vplayer.timeRemaining.Foreground = new SolidColorBrush(Color.FromRgb(45, 196, 123));
+            this.vplayer.timeElapsed.Foreground = new SolidColorBrush(Color.FromRgb(25, 79, 227));
         }
 
         private void Vplayer2_GotFocus(object sender, RoutedEventArgs e)
         {
             this.vplayer2SelectionLine.Background = new SolidColorBrush(Color.FromRgb(0, 150, 136));
-
+            this.vplayer2.timeRemaining.Foreground = new SolidColorBrush(Color.FromRgb(45, 196, 123));
+            this.vplayer2.timeElapsed.Foreground = new SolidColorBrush(Color.FromRgb(25, 79, 227));
         }
 
         private void Vplayer_LostFocus(object sender, RoutedEventArgs e)
         {
             this.vplayerSelectionLine.Background = new SolidColorBrush(Color.FromArgb(0,0,0,0));
+            this.vplayer.timeRemaining.Foreground = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+            this.vplayer.timeElapsed.Foreground = new SolidColorBrush(Color.FromRgb(0, 0, 0));
 
         }
 
         private void Vplayer2_LostFocus(object sender, RoutedEventArgs e)
         {
             this.vplayer2SelectionLine.Background = new SolidColorBrush(Color.FromArgb(0, 0, 0, 0));
+            this.vplayer2.timeRemaining.Foreground = new SolidColorBrush(Color.FromRgb(0, 0, 0));
+            this.vplayer2.timeElapsed.Foreground = new SolidColorBrush(Color.FromRgb(0, 0, 0));
 
         }
     }
