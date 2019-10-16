@@ -270,7 +270,7 @@ namespace videoflux.pages
 
         private void Page_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.Key == Key.S)
+            if(e.Key == Key.LeftCtrl)
             {
 
                 if(this.vplayer2.IsFocused)

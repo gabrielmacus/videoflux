@@ -244,7 +244,9 @@ namespace videoflux.components.VideoPlayer
 
             switch (e.Key)
             {
-                case Key.S:
+                case Key.LeftCtrl:
+
+
                     if(this.Video.RelatedVideo != null)
                     {
                         var time = this.Video.Control.Time;
