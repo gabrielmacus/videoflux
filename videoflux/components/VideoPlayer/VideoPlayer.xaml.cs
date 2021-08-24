@@ -188,7 +188,8 @@ namespace videoflux.components.VideoPlayer
             }
             videoVlc.EndInit();
             this.videoVlc.Child = videoVlc;
-
+             
+            Console.WriteLine("VLC Version:" + videoVlc.ProductVersion);
             //Inicializo el reproductor 2
             /*
             var videoVlc2 = new Vlc.DotNet.Forms.VlcControl();
@@ -368,6 +369,36 @@ namespace videoflux.components.VideoPlayer
                     }
                     e.Handled = true;
                     break;
+
+
+                case Key.F4:
+                    Snapshot s4 = this.Video.Snapshot(4);
+                    if(s4 != null)
+                    {
+                        SnapshotTaken.Invoke(sender, e, s4);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error al capturar la imagen. Inténtelo nuevamente.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    e.Handled = true;
+                    break;
+
+                case Key.F5:
+                    Snapshot s5 = this.Video.Snapshot(5);
+                    if(s5 != null)
+                    {
+                        SnapshotTaken.Invoke(sender, e, s5);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Error al capturar la imagen. Inténtelo nuevamente.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                    e.Handled = true;
+                    break;
+
+
+
                 case Key.Add:
 
                     Video.Speed = Video.Speed + 1;

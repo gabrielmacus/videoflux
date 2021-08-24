@@ -89,11 +89,12 @@ namespace videoflux.components.VideoSnapshots
             }
 
 
+            /*
             if (snapshotsGroup.Snapshots[2].Position >= snapshotsGroup.Snapshots[3].Position)
             {
                 MessageBox.Show("La foto 2 debe ser anterior en el video a la foto 3", "Error al guardar", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
-            }
+            }*/
 
 
             #region Form validation
