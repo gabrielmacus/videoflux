@@ -20,7 +20,7 @@ namespace videoflux.components.VideoPlayer
         #endregion
          
        
-        public Video video = new Video();
+        public Video video;
         public Video Video
         {
             get { return video;  }
@@ -605,17 +605,25 @@ namespace videoflux.components.VideoPlayer
         protected bool canModifySpeed = true;
         protected bool canSeekOffset = false;
         protected int seekOffset = 0;
+        protected DateTime dateTime;
 
         #region Constructors
 
-        public Video()
+        public Video(DateTime dateTime)
         {
-
+            this.dateTime = dateTime;
         }
 
         #endregion
 
         #region Setters/Getters
+        public DateTime DateTime
+        {
+            get
+            {
+                return dateTime;
+            }
+        }
         public bool CanSeekOffset
         {
             get
@@ -1223,7 +1231,7 @@ namespace videoflux.components.VideoPlayer
                  
 
                     File.SetAttributes(path, FileAttributes.Hidden);
-                    Snapshot snapshot = new Snapshot(path, number,time,control.Position);
+                    Snapshot snapshot = new Snapshot(path, number,time,control.Position, this.dateTime);
               
                     return snapshot;
                 }

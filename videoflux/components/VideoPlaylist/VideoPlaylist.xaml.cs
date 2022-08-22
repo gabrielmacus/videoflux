@@ -11,6 +11,7 @@ using Button = System.Windows.Controls.Button;
 using System.Collections.ObjectModel;
 using videoflux.components.DeviceInfo;
 using System.Text.RegularExpressions;
+using System.Globalization;
 
 namespace videoflux.components.VideoPlaylist
 {
@@ -213,6 +214,13 @@ namespace videoflux.components.VideoPlaylist
                     Match match_1 = two_cameras_filename_regex_1.Match(file.Name);
                     Match match_2 = two_cameras_filename_regex_2.Match(file.Name);
 
+                    var dt = DateTime.ParseExact(
+                        Regex.Match(file.DirectoryName, @"\\([0-9]{4}-[0-9]{2}-[0-9]{2})__[0-9].").Groups[1].Value,
+                        "yyyy-MM-dd",
+                        CultureInfo.InvariantCulture
+                        );
+
+
                     Video secondary_video = null;
                     if ((match_1.Success && match_1.Groups["camera"].Value == "1") 
                         || (match_2.Success && match_2.Groups["camera"].Value == "1"))
@@ -226,12 +234,12 @@ namespace videoflux.components.VideoPlaylist
 
                         if (File.Exists(secondary_camera_file))
                         {
-                            secondary_video = new Video();
+                            secondary_video = new Video(dt);
                             secondary_video.Src = file.FullName;
                             secondary_video.Name = file.Name;
 
                             var secondary_file = new FileInfo(secondary_camera_file);
-                            Video video = new Video();
+                            Video video = new Video(dt);
                             video.Src = secondary_file.FullName;
                             video.Name = secondary_file.Name;
                             video.RelatedVideo = secondary_video;
@@ -242,7 +250,7 @@ namespace videoflux.components.VideoPlaylist
                     }
                     else if (!match_1.Success && !match_2.Success)
                     {
-                        Video video = new Video();
+                        Video video = new Video(dt);
                         video.Src = file.FullName;
                         video.Name = file.Name;
                         videos.Add(video);

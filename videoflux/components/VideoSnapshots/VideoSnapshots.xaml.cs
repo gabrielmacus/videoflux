@@ -315,8 +315,15 @@ namespace videoflux.components.VideoSnapshots
             foreach (Snapshot entry in SnapshotsCollection)
             {
                 if(File.Exists(entry.Src)) 
-                { 
-                    var dest = $"{folderPath}/{LicensePlate}-{TimeFormatted}-F{entry.Number}-{DeviceNumber}.png";
+                {
+                    var t = new TimeSpan(entry.Time);
+                    var dt = new DateTime(t.Ticks);
+
+
+                    var ts = new TimeSpan(H, M, S);
+                    var time = new DateTime(ts.Ticks);
+                   
+                    var dest = $"{folderPath}/SF1100-P{DeviceNumber.ToString().PadLeft(3,'0')}_F{entry.Number}_{this.video.DateTime.ToString("yyyyMMdd")}_{time.ToString("HHmmss")}.JPG";
                     if(dest != entry.Src)
                     {
                         
@@ -442,18 +449,20 @@ namespace videoflux.components.VideoSnapshots
         protected int number;
         protected long time;
         protected float position;
+        protected DateTime videoDateTime;
 
-        public Snapshot(string src,int number, long time, float position)
+        public Snapshot(string src,int number, long time, float position, DateTime videoDateTime)
         {
             Src = src;
             Position = position;
-   
+
             //Console.WriteLine(src);
 
             Number = number;
             Time = time;
+            this.videoDateTime = videoDateTime;
         }
- 
+
 
         public int Number
         {
