@@ -71,7 +71,7 @@ namespace videofluxTest
             vlcControl.BeginInit();
             vlcControl.VlcLibDirectory = new DirectoryInfo(@"C:\Users\Gabriel\Downloads\vlc-3.0.6"); ;
             vlcControl.EndInit();
-            video = new Video();
+            //video = new Video();
         } 
             
 

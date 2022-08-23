@@ -215,7 +215,7 @@ namespace videoflux.components.VideoPlaylist
                     Match match_2 = two_cameras_filename_regex_2.Match(file.Name);
 
                     var dt = DateTime.ParseExact(
-                        Regex.Match(file.DirectoryName, @"\\([0-9]{4}-[0-9]{2}-[0-9]{2})__[0-9].").Groups[1].Value,
+                        Regex.Match(file.DirectoryName, @"\\([0-9]{4}-[0-9]{2}-[0-9]{2})_[0-9].").Groups[1].Value,
                         "yyyy-MM-dd",
                         CultureInfo.InvariantCulture
                         );
