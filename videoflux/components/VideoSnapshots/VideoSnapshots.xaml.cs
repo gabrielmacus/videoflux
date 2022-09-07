@@ -322,8 +322,28 @@ namespace videoflux.components.VideoSnapshots
 
                     var ts = new TimeSpan(H, M, S);
                     var time = new DateTime(ts.Ticks);
-                   
-                    var dest = $"{folderPath}/SF1100-P{DeviceNumber.ToString().PadLeft(3,'0')}_F{entry.Number}_{this.video.DateTime.ToString("yyyyMMdd")}_{time.ToString("HHmmss")}.JPG";
+
+                    var fNumber = entry.Number;
+                    switch(fNumber)
+                    {
+                        case 1:
+                            fNumber = 3;
+                        break;
+                        case 2:
+                            fNumber = 1;
+                        break;
+                        case 3:
+                            fNumber = 2;
+                        break;
+                    }
+                    
+
+                    var dest = $"{folderPath}/SF1100-P{DeviceNumber.ToString().PadLeft(3, '0')}_F{fNumber}_{this.video.DateTime.ToString("yyyyMMdd")}_{time.ToString("HHmmss")}.JPG";
+                    
+                    #if BALCARCE
+                    dest = $"{folderPath}/SF1100-{DeviceNumber}_{this.video.DateTime.ToString("yyyy-MM-dd")}_{time.ToString("HH-mm-ss")}_{LicensePlate}_F{entry.Number}.JPG";
+                    #endif
+
                     if(dest != entry.Src)
                     {
                         
@@ -396,7 +416,7 @@ namespace videoflux.components.VideoSnapshots
             }));
             task.Start();
             */
-            #endregion
+#endregion
 
 
             NotifyPropertyChanged("Snapshots");
