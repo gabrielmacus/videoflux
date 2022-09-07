@@ -558,6 +558,54 @@ MouseUp="focusOnVideo"
                     </Button.Style>
                     9
                 </Button>
+                <Button Focusable="False" FontWeight="Bold" Tag="10" Click="setSpeed">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
+
+                            <Style.Triggers>
+
+                                <DataTrigger Binding="{Binding Speed}" Value="10">
+                                    <Setter Property="Background" Value="#80cbc4"></Setter>
+                                </DataTrigger>
+
+
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    10
+                </Button>
+                <Button Focusable="False" FontWeight="Bold" Tag="11" Click="setSpeed">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
+
+                            <Style.Triggers>
+
+                                <DataTrigger Binding="{Binding Speed}" Value="11">
+                                    <Setter Property="Background" Value="#80cbc4"></Setter>
+                                </DataTrigger>
+
+
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    11
+                </Button>
+                <Button Focusable="False" FontWeight="Bold" Tag="12" Click="setSpeed" Cursor="Hand">
+                    <Button.Style>
+                        <Style TargetType="Button" BasedOn="{StaticResource ControlButton}">
+
+                            <Style.Triggers>
+
+                                <DataTrigger Binding="{Binding Speed}" Value="12">
+                                    <Setter Property="Background" Value="#80cbc4"></Setter>
+                                </DataTrigger>
+
+
+                            </Style.Triggers>
+                        </Style>
+                    </Button.Style>
+                    12
+                </Button>
 
             </UniformGrid>
 

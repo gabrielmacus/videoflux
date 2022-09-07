@@ -597,7 +597,7 @@ namespace videoflux.components.VideoPlayer
         protected uint speed = 1;
         [field: NonSerialized]
         protected Vlc.DotNet.Forms.VlcControl control;
-        protected uint maxSpeed = 9;
+        protected uint maxSpeed = 12;
         protected VIDEO_STATUS videoStatus = VIDEO_STATUS.NOT_DONE;
         protected bool active = false;
         protected Video relatedVideo;
