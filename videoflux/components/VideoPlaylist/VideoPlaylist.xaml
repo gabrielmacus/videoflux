@@ -146,9 +146,11 @@
 
             <ColumnDefinition Width="100" />
             <ColumnDefinition Width="1*" />
+            <ColumnDefinition Width="100" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="1*" />
+            <RowDefinition Height="20" />
         </Grid.RowDefinitions>
 
 
@@ -212,6 +214,19 @@
 
 
         </ScrollViewer>
+
+
+
+        <Border Grid.Column="2" BorderThickness="0 0 1 0" BorderBrush="#bdbdbd"    >
+
+            <Button BorderThickness="0" ToolTip="Cargar videos desde una carpeta..." Cursor="Hand" Focusable="False" Background="#03a9f4  " Click="fixVideos">
+                <Button.Content >Corregir videos</Button.Content>
+            </Button>
+
+        </Border>
+
+        <ProgressBar Name="pbar"  Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" ValueChanged="ProgressBar_ValueChanged" />
+
 
     </Grid>
     

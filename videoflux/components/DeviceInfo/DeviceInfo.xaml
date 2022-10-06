@@ -53,14 +53,14 @@
                         <Style.Setters>
                             <Setter Property="Visibility" Value="Visible"></Setter>
                         </Style.Setters>
-                        
+
                         <Style.Triggers >
                             <DataTrigger Binding="{Binding DeviceNumber}" Value="{x:Null}">
                                 <Setter Property="Visibility" Value="Hidden"></Setter>
                             </DataTrigger>
 
                         </Style.Triggers>
-                        
+
                     </Style>
                 </TextBlock.Style>
 
@@ -73,8 +73,6 @@
                     </MultiBinding>
                 </TextBlock.Text>
             </TextBlock>
-
-
 
         </WrapPanel>
     </Border>

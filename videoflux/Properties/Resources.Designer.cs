@@ -70,7 +70,7 @@ namespace videoflux.Properties {
         }
         
         /// <summary>
-        ///   Busca una cadena traducida similar a 1.3.0.
+        ///   Busca una cadena traducida similar a 1.5.0.
         /// </summary>
         internal static string AppVersion {
             get {

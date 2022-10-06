@@ -12,6 +12,10 @@ using System.Collections.ObjectModel;
 using videoflux.components.DeviceInfo;
 using System.Text.RegularExpressions;
 using System.Globalization;
+using System.Diagnostics;
+using System.Linq;
+using FFMpegCore;
+using static System.Net.WebRequestMethods;
 
 namespace videoflux.components.VideoPlaylist
 {
@@ -140,6 +144,56 @@ namespace videoflux.components.VideoPlaylist
             ((Video)button.Tag).VideoStatus = VIDEO_STATUS.NOT_DONE;
         }
 
+        private void fixVideos(object sender, RoutedEventArgs e)
+        {
+            var projectPath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.FullName;
+            //string ffmpegPath = Path.Combine(projectPath, "Resources", "ffmpeg.exe");
+            GlobalFFOptions.Configure(new FFOptions { BinaryFolder = Path.Combine(projectPath, "Resources") });
+            var result = MessageBox.Show("¿Corregir videos?", "Atención", MessageBoxButtons.YesNo);
+            if (result != DialogResult.Yes) return;
+
+            var videosCount = playlist.Videos.Count;
+            pbar.Maximum = videosCount;
+
+            foreach (var video in playlist.Videos)
+            {
+                video.Stop();
+
+                if (Regex.IsMatch(video.Src, @".*__FIXED\..*$"))
+                    continue;
+
+                var extension = Path.GetExtension(video.Src);
+                var oldPath = Path.Combine(Path.GetDirectoryName(video.Src),$"{Path.GetFileNameWithoutExtension(video.Src)}__OLD{extension}");
+                var outPath = Path.Combine(Path.GetDirectoryName(video.Src), $"{Path.GetFileNameWithoutExtension(video.Src)}__FIXED{extension}");
+
+                var success = FFMpegArguments
+                    .FromFileInput(video.Src)
+                    .OutputToFile(outPath, false, options => options
+                        .CopyChannel(FFMpegCore.Enums.Channel.Both))
+                    .ProcessSynchronously();
+
+                if(success)
+                {
+                    System.IO.File.Move(video.Src, oldPath);
+                    pbar.Value = pbar.Value + 1;
+                }
+                else if(System.IO.File.Exists(outPath))
+                {
+                    System.IO.File.Delete(outPath);
+                    MessageBox.Show($"Error al corregir el video {Path.GetFileName(video.Src)}");
+                }
+
+            }
+            playlist.loadFromFolder(Path.GetDirectoryName(playlist.Videos.First().Src));
+            MessageBox.Show("Proceso finalizado");
+            pbar.Value = 0;
+        }
+
+
+        private void ProgressBar_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+
+        }
     }
 
 
@@ -209,6 +263,10 @@ namespace videoflux.components.VideoPlaylist
 
             foreach (FileInfo file in files)
             {
+                //Si tiene el prefijo __OLD, ignoro el archivo
+                if(Regex.IsMatch(file.FullName, @".*__OLD\..*$"))
+                    continue;
+
                 if (Array.Exists(allowedExtensions, element => element == file.Extension))
                 {
                     Match match_1 = two_cameras_filename_regex_1.Match(file.Name);
@@ -232,7 +290,7 @@ namespace videoflux.components.VideoPlaylist
 
                         //string secondary_camera_file = Regex.Replace(file.FullName, "_([1-2]{1})__", "_2__");
 
-                        if (File.Exists(secondary_camera_file))
+                        if (System.IO.File.Exists(secondary_camera_file))
                         {
                             secondary_video = new Video(dt);
                             secondary_video.Src = file.FullName;

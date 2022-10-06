@@ -44,12 +44,13 @@ namespace videoflux.components.DeviceInfo
         {
  
         }
+        
     }
     public class WrongFolderException : Exception
     {
         public WrongFolderException():base("El nombre de la carpeta seleccionada no tiene el formato correcto")
         {
-
+            
         }
     }
      
@@ -176,6 +177,7 @@ namespace videoflux.components.DeviceInfo
         }
         [field: NonSerialized]
         public event PropertyChangedEventHandler PropertyChanged;
+
 
     }
 
